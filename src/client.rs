@@ -7,8 +7,8 @@ use async_trait::async_trait;
 pub struct Client {}
 
 #[async_trait]
-pub trait List {
-    async fn list<M>() -> Result<Vec<M>, Box<dyn Error>>;
+pub trait List<M> {
+    async fn list() -> Result<Vec<M>, Box<dyn Error>>;
 }
 
 pub trait Get {
