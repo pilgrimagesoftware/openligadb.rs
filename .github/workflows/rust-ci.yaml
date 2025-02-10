@@ -1,0 +1,149 @@
+name: CI
+
+concurrency: ci-${{ github.ref }}
+
+on:
+    push:
+        branches: [develop]
+        paths:
+            - "src/**/*.rs"
+            - Cargo.toml
+            - .rust-version
+    workflow_dispatch:
+
+jobs:
+    tests:
+        name: ${{ matrix.name }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - name: Linux
+                      os: ubuntu-latest
+                      target: x86_64-unknown-linux-musl
+                    # - build: macos
+                    #   os: macos-latest
+                    #   target: x86_64-apple-darwin
+
+        steps:
+          - uses: actions/checkout@v4
+          - name: Get language version
+            id: get_lang_version
+            run: |
+                  v=$(cat .rust-version)
+                  echo "lang_version=$v" >> $GITHUB_OUTPUT
+          - name: Install Rust
+            # Or @nightly if you want
+            uses: dtolnay/rust-toolchain@stable
+            # Arguments to pass in
+            with:
+              # Make Rust compile to our target (defined in the matrix)
+              targets: ${{ matrix.target }}
+              # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
+          - name: Build
+            uses: actions-rs/cargo@v1
+            with:
+              use-cross: true
+              command: build
+              args: --verbose --release --target ${{ matrix.target }}
+          - name: publish-docs
+            uses: peaceiris/actions-gh-pages@v4
+            with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+                publish_dir: ./coverage
+
+    #    docs:
+    #        needs: [tests]
+    #        runs-on: ubuntu-latest
+    #        concurrency: docs
+    #        steps:
+    #            - uses: actions/checkout@v4
+    #            - uses: actions/setup-python@v5
+    #              with:
+    #                  python-version: "3.11"
+    #            - name: install-deps
+    #              run: pip install -r requirements/docs.txt
+    #            - name: make-docs
+    #              run: cd docs && make html
+    #            - name: publish-docs
+    #              uses: peaceiris/actions-gh-pages@v4
+    #              with:
+    #                  github_token: ${{ secrets.GITHUB_TOKEN }}
+    #                  publish_dir: ./docs/_build/html
+
+    tag:
+        needs: [tests]
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - name: Bump version and push tag
+              uses: anothrNick/github-tag-action@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  WITH_V: true
+                  DEFAULT_BUMP: patch
+
+    publish:
+        needs: [tag]
+        runs-on: ubuntu-latest
+        concurrency: publish
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+            - name: Get latest tag
+              id: get_latest_tag
+              uses: actions-ecosystem/action-get-latest-tag@v1
+            # - name: Publish
+            #   env:
+            #     GOPROXY: proxy.golang.org
+            #   run: go list -m github.com/sweetrpg/common@${{ steps.get_latest_tag.outputs.tag }}
+
+    notify:
+        needs: [tag]
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - repo: api-core.rs
+                    - repo: catalog-api
+                    - repo: catalog-data.rs
+                    - repo: catalog-data-processor
+                    - repo: catalog-objects.rs
+                    - repo: catalog-web
+                    - repo: client.rs
+                    - repo: data-api
+                    - repo: data-objects.rs
+                    - repo: db.rs
+                    - repo: initiative-api
+                    - repo: initiative-data.rs
+                    - repo: initiative-objects.rs
+                    - repo: initiative-web
+                    - repo: kv-api
+                    - repo: kv-data.rs
+                    - repo: kv-expression-processor
+                    - repo: kv-key-processor
+                    - repo: kv-objects.rs
+                    - repo: kv-value-calculator
+                    - repo: kv-web
+                    - repo: library-api
+                    - repo: library-data.rs
+                    - repo: library-objects.rs
+                    - repo: library-web
+                    - repo: main-web
+                    - repo: model-core.rs
+                    - repo: shared-web
+                    - repo: web-core.rs
+        steps:
+            - uses: juztcode/repo-ditpatch-action@v1
+              continue-on-error: true
+              with:
+                event-type: api-core-published
+                token: ${{ secrets.REPO_ACCESS_TOKEN }}
+                repository: sweetrpg/${{ matrix.repo }}

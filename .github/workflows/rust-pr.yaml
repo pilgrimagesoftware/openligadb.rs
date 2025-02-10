@@ -1,0 +1,42 @@
+name: PR
+
+on:
+    pull_request:
+        branches: [develop]
+
+jobs:
+    tests:
+        name: ${{ matrix.name }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - name: Linux
+                      os: ubuntu-latest
+                      target: x86_64-unknown-linux-musl
+                    # - build: macos
+                    #   os: macos-latest
+                    #   target: x86_64-apple-darwin
+
+        steps:
+          - uses: actions/checkout@v4
+          - name: Get language version
+            id: get_lang_version
+            run: |
+                  v=$(cat .rust-version)
+                  echo "lang_version=$v" >> $GITHUB_OUTPUT
+          - name: Install Rust
+            # Or @nightly if you want
+            uses: dtolnay/rust-toolchain@stable
+            # Arguments to pass in
+            with:
+              # Make Rust compile to our target (defined in the matrix)
+              targets: ${{ matrix.target }}
+              # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
+          - name: Build
+            uses: actions-rs/cargo@v1
+            with:
+              use-cross: true
+              command: build
+              args: --verbose --release --target ${{ matrix.target }}
