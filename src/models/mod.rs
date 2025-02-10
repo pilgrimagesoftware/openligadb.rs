@@ -1,4 +1,9 @@
-mod sport;
+mod bundesliga;
+mod goal;
+mod group;
 mod league;
+mod location;
 mod r#match;
+mod result;
+mod sport;
 mod team;

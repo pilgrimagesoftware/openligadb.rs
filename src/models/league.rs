@@ -8,13 +8,13 @@ use url::Url;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct League {
     #[serde(rename(deserialize = "leagueId"))]
-    pub id: u64,
+    pub id: i32,
     #[serde(rename(deserialize = "leagueName"))]
-    pub name: String,
+    pub name: Option<String>,
     #[serde(rename(deserialize = "leagueShortcut"))]
-    pub shortcut: String,
+    pub shortcut: Option<String>,
     #[serde(rename(deserialize = "leagueSeason"))]
-    pub season: String,
+    pub season: Option<String>,
     pub sport: Sport,
 }
 

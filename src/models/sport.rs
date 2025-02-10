@@ -7,9 +7,9 @@ use url::Url;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Sport {
     #[serde(rename(deserialize = "sportId"))]
-    pub id: u64,
+    pub id: i32,
     #[serde(rename(deserialize = "sportName"))]
-    pub name: String,
+    pub name: Option<String>,
 }
 
 #[async_trait]
