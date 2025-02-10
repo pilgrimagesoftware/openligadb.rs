@@ -10,3 +10,10 @@
 [mit-url]: https://github.com/pilgrimagesoftware/openligadb.rs/blob/master/LICENSE
 
 This is a Rust client for accessing the [OpenLigaDB API](https://www.openligadb.de/).
+
+## Using
+
+```toml
+[dependencies]
+openligadb = "0.0.1"
+```
