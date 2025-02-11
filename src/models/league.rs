@@ -1,26 +1,35 @@
+//! The League object and methods
+use crate::constants::API_BASE_URL;
 use crate::models::sport::Sport;
-use crate::{constants::API_BASE_URL};
 use crate::util;
-use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use url::Url;
 
+/// A data structure
 #[derive(Debug, Serialize, Deserialize)]
 pub struct League {
+    /// The identifier of this league data
     #[serde(rename(deserialize = "leagueId"))]
     pub id: i32,
+    /// The name of the league
     #[serde(rename(deserialize = "leagueName"))]
     pub name: Option<String>,
+    /// The shortcut value for the league. This is used for some other API calls.
     #[serde(rename(deserialize = "leagueShortcut"))]
     pub shortcut: Option<String>,
+    /// The season for this league
     #[serde(rename(deserialize = "leagueSeason"))]
     pub season: Option<String>,
+    /// The sport to which this league belongs
     pub sport: Sport,
 }
 
 impl League {
-    async fn list() -> Result<Vec<Self>, Box<dyn Error>> {
+    /// List the leagues
+    ///
+    /// Fetches a list of leagues.
+    pub async fn list() -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!("{}/getavailableleagues", API_BASE_URL))?;
 
         util::list::<Self>(api_url).await

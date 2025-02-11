@@ -1,3 +1,4 @@
+//! Models defined by the API
 pub mod goal;
 pub mod group;
 pub mod league;

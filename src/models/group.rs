@@ -4,18 +4,27 @@ use serde::{Deserialize, Serialize};
 use std::error::Error;
 use url::Url;
 
+/// A data structure representing a group
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Group {
+    /// The identifier of this group data
     #[serde(rename(deserialize = "groupID"))]
     pub id: i32,
+    /// The name of the group
     #[serde(rename(deserialize = "groupName"))]
     pub name: Option<String>,
+    /// The order identifier of the group
     #[serde(rename(deserialize = "groupOrderID"))]
     pub order_id: i32,
 }
 
 impl Group {
-    async fn current(
+    /// Get the current league group
+    ///
+    /// Fetches the current group for a specific league.
+    ///
+    /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
+    pub async fn current(
         league: &str
     ) -> Result<Self, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
@@ -33,7 +42,13 @@ impl Group {
         Ok(response)
     }
 
-    async fn available(
+    /// A list of groups for a league and season
+    ///
+    /// Fetches a list of groups for the specified league and season.
+    ///
+    /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
+    /// * `season` - The season, usually the starting year
+    pub async fn available(
         league: &str,
         season: i32
     ) -> Result<Vec<Self>, Box<dyn Error>> {
