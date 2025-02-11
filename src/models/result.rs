@@ -44,18 +44,18 @@ pub struct ResultInfo {
 }
 
 impl ResultInfo {
-    async fn get(
-        league: &str
-    ) -> Result<Self, Box<dyn Error>> {
+    async fn list(
+        league_id: i32
+    ) -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getresultinfos/{}",
-            API_BASE_URL, league
+            API_BASE_URL, league_id
         ))?;
 
         let response = reqwest::get(api_url.as_str())
             .await
             .map_err(|e| e.to_string())?
-            .json::<Self>()
+            .json::<Vec<Self>>()
             .await
             .map_err(|e| e.to_string())?;
 
@@ -68,13 +68,15 @@ mod tests {
     use super::*;
     use std::error::Error;
 
+    const BUNDESLIGA_ID: i32 = 3;
+
     #[actix_web::test]
     async fn test_get() {
-        let league = "bl1";
-        let result: Result<ResultInfo, Box<dyn Error>> = ResultInfo::get(league).await;
-        dbg!(&result);
+        let league = BUNDESLIGA_ID;
+        let results: Result<Vec<ResultInfo>, Box<dyn Error>> = ResultInfo::list(league).await;
+        dbg!(&results);
 
-        assert!(result.is_ok());
+        assert!(results.is_ok());
     }
 
 }

@@ -11,7 +11,7 @@ use super::team;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Match {
     #[serde(rename(deserialize = "matchID"))]
-    pub id: u64,
+    pub id: i32,
     #[serde(rename(deserialize = "matchDateTime"))]
     pub when: Option<String>,
     #[serde(rename(deserialize = "timeZoneID"))]
@@ -217,13 +217,13 @@ impl Match {
         Ok(response)
     }
 
-    async fn by_team(
+    async fn by_team_range(
         team_filter: &str,
         week_count_past: i32,
         week_count_future: i32,
     ) -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
-            "{}/getlastmatchbyteam/{}/{}/{}",
+            "{}/getmatchesbyteam/{}/{}/{}",
             API_BASE_URL, team_filter, week_count_past, week_count_future
         ))?;
 
@@ -237,13 +237,13 @@ impl Match {
         Ok(response)
     }
 
-    async fn by_team_id(
+    async fn by_team_id_range(
         team_id: i32,
         week_count_past: i32,
         week_count_future: i32,
     ) -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
-            "{}/getlastmatchbyteamid/{}/{}/{}",
+            "{}/getmatchesbyteamid/{}/{}/{}",
             API_BASE_URL, team_id, week_count_past, week_count_future
         ))?;
 
@@ -263,19 +263,29 @@ mod tests {
     use super::*;
     use std::error::Error;
 
+    const LEIPZIG_TEAM_ID: i32 = 1635;
+    const KIEL_TEAM_ID: i32 = 104;
+    const LEIPZIG_STPAULI_MATCH_ID: i32 = 72395;
+    const BUNDESLIGA: &str = "bl1";
+
     #[actix_web::test]
     async fn test_get() {
-        let match_id = 1;
+        let match_id =LEIPZIG_STPAULI_MATCH_ID ; // Leipzig - St. Pauli
         let r#match: Result<Match, Box<dyn Error>> = Match::get(match_id).await;
         dbg!(&r#match);
 
-        assert!(r#match.is_ok());
+        assert!(&r#match.is_ok());
+        assert_eq!(&r#match.as_ref().unwrap().id, &match_id);
+        assert!(&r#match.as_ref().unwrap().team1.short_name.is_some());
+        // assert_eq!(r#match.as_ref().unwrap().team1.short_name.as_ref().unwrap(), "Leipzig".to_string());
+        assert!(&r#match.as_ref().unwrap().group.name.is_some());
+        // assert_eq!(&r#match.as_ref().unwrap().group.name.unwrap(), "21. Spieltag");
     }
 
     #[actix_web::test]
     async fn test_by_teams() {
-        let team1 = 1;
-        let team2 = 2;
+        let team1 = LEIPZIG_TEAM_ID; // Leipzig
+        let team2 = KIEL_TEAM_ID; // Holstein Kiel
         let r#match: Result<Match, Box<dyn Error>> = Match::by_teams(team1, team2).await;
         dbg!(&r#match);
 
@@ -284,7 +294,7 @@ mod tests {
 
     #[actix_web::test]
     async fn test_by_league() {
-        let league = "bl1";
+        let league = BUNDESLIGA;
         let season = 2024;
         let matches: Result<Vec<Match>, Box<dyn Error>> = Match::by_league(league, season).await;
         dbg!(&matches);
@@ -294,7 +304,7 @@ mod tests {
 
     #[actix_web::test]
     async fn test_by_league_group() {
-        let league = "bl1";
+        let league = BUNDESLIGA;
         let season = 2024;
         let group_id = 1;
         let matches: Result<Vec<Match>, Box<dyn Error>> = Match::by_league_group(league, season, group_id).await;
@@ -305,8 +315,8 @@ mod tests {
 
     #[actix_web::test]
     async fn test_next_match_by_league_team() {
-        let league = "bl1";
-        let team_id = 1;
+        let league = BUNDESLIGA;
+        let team_id = LEIPZIG_TEAM_ID;
         let r#match: Result<Match, Box<dyn Error>> = Match::next_match_by_league_team(league, team_id).await;
         dbg!(&r#match);
 
@@ -315,7 +325,7 @@ mod tests {
 
     #[actix_web::test]
     async fn test_last_match_by_league_team() {
-        let league = "bl1";
+        let league = BUNDESLIGA;
         let team_id = 1;
         let r#match: Result<Match, Box<dyn Error>> = Match::last_match_by_league_team(league, team_id).await;
         dbg!(&r#match);
@@ -325,7 +335,7 @@ mod tests {
 
     #[actix_web::test]
     async fn test_next_match_by_league() {
-        let league = "bl1";
+        let league = BUNDESLIGA;
         let r#match: Result<Match, Box<dyn Error>> = Match::next_match_by_league(league).await;
         dbg!(&r#match);
 
@@ -334,7 +344,7 @@ mod tests {
 
     #[actix_web::test]
     async fn test_last_match_by_league() {
-        let league = "bl1";
+        let league = BUNDESLIGA;
         let r#match: Result<Match, Box<dyn Error>> = Match::last_match_by_league(league).await;
         dbg!(&r#match);
 
@@ -343,9 +353,9 @@ mod tests {
 
     #[actix_web::test]
     async fn test_by_league_team() {
-        let league = "bl1";
+        let league = BUNDESLIGA;
         let season = 2024;
-        let team = "TODO";
+        let team = "Leipzig";
         let matches: Result<Vec<Match>, Box<dyn Error>> = Match::by_league_team(league, season, team).await;
         dbg!(&matches);
 
@@ -353,22 +363,22 @@ mod tests {
     }
 
     #[actix_web::test]
-    async fn test_by_team() {
-        let team_filter = "TODO";
+    async fn test_by_team_range() {
+        let team_filter = "Leipzig";
         let week_count_past = 1;
         let week_count_future = 1;
-        let matches: Result<Vec<Match>, Box<dyn Error>> = Match::by_team(team_filter, week_count_past, week_count_future).await;
+        let matches: Result<Vec<Match>, Box<dyn Error>> = Match::by_team_range(team_filter, week_count_past, week_count_future).await;
         dbg!(&matches);
 
         assert!(matches.is_ok());
     }
 
     #[actix_web::test]
-    async fn test_by_team_id() {
-        let team_id = 1;
+    async fn test_by_team_id_range() {
+        let team_id = LEIPZIG_TEAM_ID;
         let week_count_past = 1;
         let week_count_future = 1;
-        let matches: Result<Vec<Match>, Box<dyn Error>> = Match::by_team_id(team_id, week_count_past, week_count_future).await;
+        let matches: Result<Vec<Match>, Box<dyn Error>> = Match::by_team_id_range(team_id, week_count_past, week_count_future).await;
         dbg!(&matches);
 
         assert!(matches.is_ok());

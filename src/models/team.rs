@@ -34,10 +34,10 @@ impl Team {
         Ok(response)
     }
 
-    async fn last_match(league: &str, id: i32) -> Result<Self, Box<dyn Error>> {
+    async fn last_match(league_id: i32, id: i32) -> Result<Self, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getlastmatchbyleagueteam/{}/{}",
-            API_BASE_URL, league, id
+            API_BASE_URL, league_id, id
         ))?;
 
         let response = reqwest::get(api_url.as_str())
@@ -56,23 +56,31 @@ mod tests {
     use super::*;
     use std::error::Error;
 
+    const LEIPZIG_TEAM_ID: i32 = 1635;
+    const BUNDESLIGA_ID: i32 = 3;
+    const BUNDESLIGA: &str = "bl1";
+
     #[actix_web::test]
     async fn test_available_teams() {
-        let league = "bl1";
+        let league = BUNDESLIGA;
         let season = 2024;
-        let teams: Result<Vec<Team>, Box<dyn Error>> = Team::available(league, season).await;
-        dbg!(&teams);
+        let result: Result<Vec<Team>, Box<dyn Error>> = Team::available(league, season).await;
+        dbg!(&result);
 
-        assert!(teams.is_ok());
+        assert!(result.is_ok());
+        let teams = result.unwrap();
+        assert_eq!(teams.len(), 18); // 18 teams in Bundesliga
     }
 
     #[actix_web::test]
     async fn test_last_match() {
-        let league = "bl1";
-        let team_id = 2024;
-        let team: Result<Team, Box<dyn Error>> = Team::last_match(league, team_id).await;
-        dbg!(&team);
+        let league = BUNDESLIGA_ID;
+        let team_id = LEIPZIG_TEAM_ID;
+        let result: Result<Team, Box<dyn Error>> = Team::last_match(league, team_id).await;
+        dbg!(&result);
 
-        assert!(team.is_ok());
+        assert!(result.is_ok());
+        let team = result.unwrap();
+        assert_eq!(team.id, LEIPZIG_TEAM_ID);
     }
 }

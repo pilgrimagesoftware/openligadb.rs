@@ -76,9 +76,11 @@ mod tests {
     use super::*;
     use std::error::Error;
 
+    const BUNDESLIGA: &str = "bl1";
+
     #[actix_web::test]
     async fn test_bl_table() {
-        let league = "bl1";
+        let league = BUNDESLIGA;
         let season = 2024;
         let table: Result<Vec<TableTeam>, Box<dyn Error>> = TableTeam::get_bl_table(league, season).await;
         dbg!(&table);
@@ -88,7 +90,7 @@ mod tests {
 
     #[actix_web::test]
     async fn test_group_table() {
-        let league = "bl1";
+        let league = BUNDESLIGA;
         let season = 2024;
         let table: Result<Vec<TableTeam>, Box<dyn Error>> = TableTeam::get_group_table(league, season).await;
         dbg!(&table);
