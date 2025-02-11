@@ -33,3 +33,6 @@ openssl-sys = { version = "0.9", features = ["vendored"] }
 [dev-dependencies]
 actix-web = "4.0"
 cargo-llvm-cov = "0.6"
+
+[build]
+profiler = true
