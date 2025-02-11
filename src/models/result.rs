@@ -2,6 +2,7 @@ use crate::constants::API_BASE_URL;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use url::Url;
+use crate::util;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GlobalResultInfo {
@@ -40,5 +41,36 @@ pub struct ResultInfo {
     #[serde(rename(deserialize = "orderId"))]
     pub order_id: Option<i32>,
     #[serde(rename(deserialize = "globalResultInfo"))]
-    pub global_result_info: GlobalResultInfo,
+    pub global_result_info: Option<GlobalResultInfo>,
+}
+
+impl ResultInfo {
+    async fn list(
+        league_id: i32
+    ) -> Result<Vec<Self>, Box<dyn Error>> {
+        let api_url = Url::parse(&format!(
+            "{}/getresultinfos/{}",
+            API_BASE_URL, league_id
+        ))?;
+
+        util::list::<Self>(api_url).await
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::error::Error;
+
+    const BUNDESLIGA_ID: i32 = 3;
+
+    #[actix_web::test]
+    async fn test_list() {
+        let league = BUNDESLIGA_ID;
+        let results: Result<Vec<ResultInfo>, Box<dyn Error>> = ResultInfo::list(league).await;
+        dbg!(&results);
+
+        assert!(results.is_ok());
+    }
+
 }

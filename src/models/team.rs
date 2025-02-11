@@ -2,6 +2,7 @@ use crate::constants::API_BASE_URL;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use url::Url;
+use crate::util;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Team {
@@ -18,36 +19,13 @@ pub struct Team {
 }
 
 impl Team {
-    async fn list(league: &str, season: i32) -> Result<Vec<Self>, Box<dyn Error>> {
+    async fn available(league: &str, season: i32) -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getavailableteams/{}/{}",
             API_BASE_URL, league, season
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Vec<Self>>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
-    }
-
-    async fn last_match(league: &str, id: i32) -> Result<Self, Box<dyn Error>> {
-        let api_url = Url::parse(&format!(
-            "{}/getlastmatchbyleagueteam/{}/{}",
-            API_BASE_URL, league, id
-        ))?;
-
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Self>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::list::<Self>(api_url).await
     }
 }
 
@@ -56,13 +34,17 @@ mod tests {
     use super::*;
     use std::error::Error;
 
-    #[actix_web::test]
-    async fn test_list_teams() {
-        let league = "bl1";
-        let season = 2024;
-        let teams: Result<Vec<Team>, Box<dyn Error>> = Team::list(league, season).await;
-        dbg!(&teams);
+    const BUNDESLIGA: &str = "bl1";
 
-        assert!(teams.is_ok());
+    #[actix_web::test]
+    async fn test_available_teams() {
+        let league = BUNDESLIGA;
+        let season = 2024;
+        let result: Result<Vec<Team>, Box<dyn Error>> = Team::available(league, season).await;
+        dbg!(&result);
+
+        assert!(result.is_ok());
+        let teams = result.unwrap();
+        assert_eq!(teams.len(), 18); // 18 teams in Bundesliga
     }
 }

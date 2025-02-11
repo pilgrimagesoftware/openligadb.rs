@@ -1,5 +1,6 @@
 use crate::models::sport::Sport;
-use crate::{client::List, constants::API_BASE_URL};
+use crate::{constants::API_BASE_URL};
+use crate::util;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
@@ -18,12 +19,11 @@ pub struct League {
     pub sport: Sport,
 }
 
-#[async_trait]
-impl<M: for<'de> serde::Deserialize<'de> + 'static> List<M> for League {
-    async fn list() -> Result<Vec<M>, Box<dyn Error>> {
+impl League {
+    async fn list() -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!("{}/getavailableleagues", API_BASE_URL))?;
 
-        crate::client::list::<M>(api_url).await
+        util::list::<Self>(api_url).await
     }
 }
 
