@@ -6,12 +6,14 @@ edition = "2021"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/pilgrimagesoftware/openligadb.rs"
+documentation = "https://docs.rs/openligadb"
 homepage = "https://github.com/pilgrimagesoftware/openligadb.rs"
 keywords = ["openliga", "openligadb", "football", "soccer"]
 categories = ["data-structures"]
 authors = ["Paul Schifferer <paul@schifferers.net>"]
 exclude = [
     "*.orig",
+    "data/*",
     ".github/*",
     ".gitignore",
     ".rust-version",
@@ -26,10 +28,7 @@ serde_json = "1.0"
 url = "2.0"
 async-trait = "0.1"
 actix-web = "4.0"
-
-[dependencies.openssl-sys]
-version = "0.9"
-features = ["vendored"]
+openssl-sys = { version = "0.9", features = ["vendored"] }
 
 [dev-dependencies]
 actix-web = "4.0"
