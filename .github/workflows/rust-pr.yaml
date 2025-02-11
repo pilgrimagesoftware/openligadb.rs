@@ -40,6 +40,7 @@ jobs:
               # Make Rust compile to our target (defined in the matrix)
               targets: ${{ matrix.target }}
               # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
+              components: clippy rustfmt llvm-tools-preview
           - name: Build
             uses: actions-rs/cargo@v1
             env:
