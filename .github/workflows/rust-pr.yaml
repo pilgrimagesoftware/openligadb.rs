@@ -46,3 +46,9 @@ jobs:
               use-cross: true
               command: test
               args: --verbose --release --target ${{ matrix.target }}
+          - name: Build documentation
+            uses: actions-rs/cargo@v1
+            with:
+                use-cross: true
+                command: rustdoc
+                args: --verbose
