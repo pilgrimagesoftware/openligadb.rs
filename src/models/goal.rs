@@ -36,3 +36,41 @@ pub struct GoalGetter {
     #[serde(rename(deserialize = "goalCount"))]
     pub goal_count: i32,
 }
+
+impl GoalGetter {
+    async fn list(
+        league: &str,
+        season: i32
+    ) -> Result<Vec<Self>, Box<dyn Error>> {
+        let api_url = Url::parse(&format!(
+            "{}/getgoalgetters/{}/{}",
+            API_BASE_URL, league, season
+        ))?;
+
+        let response = reqwest::get(api_url.as_str())
+            .await
+            .map_err(|e| e.to_string())?
+            .json::<Vec<Self>>()
+            .await
+            .map_err(|e| e.to_string())?;
+
+        Ok(response)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::error::Error;
+
+    #[actix_web::test]
+    async fn test_list() {
+        let league = "bl1";
+        let season = 2024;
+        let teams: Result<Vec<GoalGetter>, Box<dyn Error>> = GoalGetter::list(league, season).await;
+        dbg!(&teams);
+
+        assert!(teams.is_ok());
+    }
+
+}

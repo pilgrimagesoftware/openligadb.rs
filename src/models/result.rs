@@ -42,3 +42,39 @@ pub struct ResultInfo {
     #[serde(rename(deserialize = "globalResultInfo"))]
     pub global_result_info: GlobalResultInfo,
 }
+
+impl ResultInfo {
+    async fn get(
+        league: &str
+    ) -> Result<Self, Box<dyn Error>> {
+        let api_url = Url::parse(&format!(
+            "{}/getresultinfos/{}",
+            API_BASE_URL, league
+        ))?;
+
+        let response = reqwest::get(api_url.as_str())
+            .await
+            .map_err(|e| e.to_string())?
+            .json::<Self>()
+            .await
+            .map_err(|e| e.to_string())?;
+
+        Ok(response)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::error::Error;
+
+    #[actix_web::test]
+    async fn test_get() {
+        let league = "bl1";
+        let result: Result<ResultInfo, Box<dyn Error>> = ResultInfo::get(league).await;
+        dbg!(&result);
+
+        assert!(result.is_ok());
+    }
+
+}

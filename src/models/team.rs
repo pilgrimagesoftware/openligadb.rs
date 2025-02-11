@@ -18,7 +18,7 @@ pub struct Team {
 }
 
 impl Team {
-    async fn list(league: &str, season: i32) -> Result<Vec<Self>, Box<dyn Error>> {
+    async fn available(league: &str, season: i32) -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getavailableteams/{}/{}",
             API_BASE_URL, league, season
@@ -57,12 +57,22 @@ mod tests {
     use std::error::Error;
 
     #[actix_web::test]
-    async fn test_list_teams() {
+    async fn test_available_teams() {
         let league = "bl1";
         let season = 2024;
-        let teams: Result<Vec<Team>, Box<dyn Error>> = Team::list(league, season).await;
+        let teams: Result<Vec<Team>, Box<dyn Error>> = Team::available(league, season).await;
         dbg!(&teams);
 
         assert!(teams.is_ok());
+    }
+
+    #[actix_web::test]
+    async fn test_last_match() {
+        let league = "bl1";
+        let team_id = 2024;
+        let team: Result<Team, Box<dyn Error>> = Team::last_match(league, team_id).await;
+        dbg!(&team);
+
+        assert!(team.is_ok());
     }
 }
