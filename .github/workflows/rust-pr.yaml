@@ -42,7 +42,8 @@ jobs:
               # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
               components: clippy rustfmt llvm-tools-preview
           - name: Install cargo-llvm-cov
-            uses: taiki-e/install-action@cargo-llvm-cov
+            run: |
+                  cargo install cargo-llvm-cov
           - name: Build
             uses: actions-rs/cargo@v1
             env:
