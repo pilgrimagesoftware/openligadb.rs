@@ -46,6 +46,10 @@ jobs:
               use-cross: true
               command: test
               args: --release --target ${{ matrix.target }}
+          - uses: qltysh/qlty-action/coverage@main
+            with:
+                coverage-token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+                files: target/lcov.info
           - name: Build documentation
             uses: actions-rs/cargo@v1
             with:
