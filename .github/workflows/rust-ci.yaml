@@ -47,30 +47,33 @@ jobs:
               use-cross: true
               command: test
               args: --verbose --release --target ${{ matrix.target }}
-          - name: publish-docs
-            uses: peaceiris/actions-gh-pages@v4
-            with:
-                github_token: ${{ secrets.GITHUB_TOKEN }}
-                publish_dir: ./coverage
 
-    #    docs:
-    #        needs: [tests]
-    #        runs-on: ubuntu-latest
-    #        concurrency: docs
-    #        steps:
-    #            - uses: actions/checkout@v4
-    #            - uses: actions/setup-python@v5
-    #              with:
-    #                  python-version: "3.11"
-    #            - name: install-deps
-    #              run: pip install -r requirements/docs.txt
-    #            - name: make-docs
-    #              run: cd docs && make html
-    #            - name: publish-docs
-    #              uses: peaceiris/actions-gh-pages@v4
-    #              with:
-    #                  github_token: ${{ secrets.GITHUB_TOKEN }}
-    #                  publish_dir: ./docs/_build/html
+    docs:
+        needs: [tests]
+        runs-on: ubuntu-latest
+        concurrency: docs
+        steps:
+            - uses: actions/checkout@v4
+            - name: Get language version
+              id: get_lang_version
+              run: |
+                    v=$(cat .rust-version)
+                    echo "lang_version=$v" >> $GITHUB_OUTPUT
+            - name: Install Rust
+              # Or @nightly if you want
+              uses: dtolnay/rust-toolchain@stable
+              # Arguments to pass in
+            - name: Build documentation
+              uses: actions-rs/cargo@v1
+              with:
+                  use-cross: true
+                  command: rustdoc
+                  args: --verbose
+            - name: Publish documentation
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_dir: ./target/doc/openligadb
 
     release:
         needs: [tests]

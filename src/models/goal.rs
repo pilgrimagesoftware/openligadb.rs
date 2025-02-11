@@ -1,8 +1,9 @@
+//! Goal objects
 use crate::constants::API_BASE_URL;
+use crate::util;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use url::Url;
-use crate::util;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Goal {
@@ -39,10 +40,13 @@ pub struct GoalGetter {
 }
 
 impl GoalGetter {
-    async fn list(
-        league: &str,
-        season: i32
-    ) -> Result<Vec<Self>, Box<dyn Error>> {
+    /// List goal getters
+    ///
+    /// Retrieve a list of all goal getters for a particular league's season.
+    ///
+    /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
+    /// * `season` - The season value, usually the year the season begins
+    async fn list(league: &str, season: i32) -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getgoalgetters/{}/{}",
             API_BASE_URL, league, season
@@ -68,5 +72,4 @@ mod tests {
 
         assert!(teams.is_ok());
     }
-
 }
