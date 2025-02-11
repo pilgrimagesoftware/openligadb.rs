@@ -13,5 +13,5 @@
 #![warn(rust_2018_idioms)]
 
 mod constants;
-mod models;
+pub mod models;
 mod util;
