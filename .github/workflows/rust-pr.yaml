@@ -49,7 +49,7 @@ jobs:
                 # LLVM_PROFILE_FILE: "coverage/openligadb-%p.profraw"
                 RUSTFLAGS: "-C instrument-coverage"
             with:
-                use-cross: true
+                use-cross: false
                 command: llvm-cov
                 args: --lcov --output-path target/lcov.info --release --target ${{ matrix.target }}
           - uses: qltysh/qlty-action/coverage@main
