@@ -83,13 +83,6 @@ jobs:
                   fetch-depth: 0
             - name: Install Rust
               uses: dtolnay/rust-toolchain@stable
-            - name: Run release-plz
-              uses: release-plz/action@v0.5
-              with:
-                command: release
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_KEY }}
             - name: Bump version and push tag
               id: bump_version
               uses: anothrNick/github-tag-action@v1
@@ -107,3 +100,10 @@ jobs:
                     git add Cargo.toml
                     git commit -m "Update Cargo.toml on ${{ github.ref_name }} with version: ${{ steps.bump_version.outputs.new_tag }}"
                     git push origin --tags
+            - name: Run release-plz
+              uses: release-plz/action@v0.5
+              with:
+                  command: release
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_KEY }}
