@@ -1,4 +1,5 @@
-use crate::{client::List, constants::API_BASE_URL};
+use crate::{constants::API_BASE_URL};
+use crate::util;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
@@ -12,12 +13,11 @@ pub struct Sport {
     pub name: Option<String>,
 }
 
-#[async_trait]
-impl<M: for<'de> serde::Deserialize<'de> + 'static> List<M> for Sport {
-    async fn list() -> Result<Vec<M>, Box<dyn Error>> {
+impl Sport {
+    async fn list() -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!("{}/getavailablesports", API_BASE_URL))?;
 
-        crate::client::list::<M>(api_url).await
+        util::list::<Self>(api_url).await
     }
 }
 

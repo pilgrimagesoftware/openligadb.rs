@@ -1,9 +1,4 @@
-use crate::models::sport::Sport;
-use crate::{client::List, constants::API_BASE_URL};
-use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
-use std::error::Error;
-use url::Url;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Location {

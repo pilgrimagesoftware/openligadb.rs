@@ -2,6 +2,7 @@ use crate::constants::API_BASE_URL;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use url::Url;
+use crate::util;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Team {
@@ -24,14 +25,7 @@ impl Team {
             API_BASE_URL, league, season
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Vec<Self>>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::list::<Self>(api_url).await
     }
 }
 
@@ -40,8 +34,6 @@ mod tests {
     use super::*;
     use std::error::Error;
 
-    const LEIPZIG_TEAM_ID: i32 = 1635;
-    const BUNDESLIGA_ID: i32 = 4741;
     const BUNDESLIGA: &str = "bl1";
 
     #[actix_web::test]

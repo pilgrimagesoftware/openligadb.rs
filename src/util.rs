@@ -2,19 +2,6 @@ use reqwest;
 use serde::de::DeserializeOwned;
 use std::error::Error;
 use url::Url;
-use async_trait::async_trait;
-
-pub struct Client {}
-
-#[async_trait]
-pub trait List<M> {
-    async fn list() -> Result<Vec<M>, Box<dyn Error>>;
-}
-
-#[async_trait]
-pub trait Get<M> {
-    async fn get(id: i32) -> Result<M, Box<dyn Error>>;
-}
 
 pub async fn list<M>(url: Url) -> Result<Vec<M>, Box<dyn Error>> where M : DeserializeOwned + 'static {
     let response = reqwest::get(url.as_str())

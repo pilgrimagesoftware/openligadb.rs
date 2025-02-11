@@ -2,6 +2,7 @@ use crate::constants::API_BASE_URL;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use url::Url;
+use crate::util;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Goal {
@@ -12,7 +13,7 @@ pub struct Goal {
     #[serde(rename(deserialize = "scoreTeam2"))]
     pub score_team2: Option<i32>,
     #[serde(rename(deserialize = "matchMinute"))]
-    pub match_minute: Option<String>,
+    pub match_minute: Option<i32>,
     #[serde(rename(deserialize = "goalGetterID"))]
     pub goal_getter_id: i32,
     #[serde(rename(deserialize = "goalGetterName"))]
@@ -47,14 +48,7 @@ impl GoalGetter {
             API_BASE_URL, league, season
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Vec<Self>>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::list(api_url).await
     }
 }
 
@@ -63,9 +57,11 @@ mod tests {
     use super::*;
     use std::error::Error;
 
+    const BUNDESLIGA: &str = "bl1";
+
     #[actix_web::test]
     async fn test_list() {
-        let league = "bl1";
+        let league = BUNDESLIGA;
         let season = 2024;
         let teams: Result<Vec<GoalGetter>, Box<dyn Error>> = GoalGetter::list(league, season).await;
         dbg!(&teams);

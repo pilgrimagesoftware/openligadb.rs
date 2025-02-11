@@ -1,13 +1,11 @@
 use crate::constants::API_BASE_URL;
-use crate::client::Get;
 use crate::models::{
     goal::Goal, group::Group, location::Location, result::MatchResult, team::Team,
 };
+use crate::util;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use url::Url;
-use async_trait::async_trait;
-use super::team;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Match {
@@ -22,7 +20,7 @@ pub struct Match {
     #[serde(rename(deserialize = "leagueName"))]
     pub league_name: Option<String>,
     #[serde(rename(deserialize = "leagueSeason"))]
-    pub league_season: Option<String>,
+    pub league_season: Option<i32>,
     #[serde(rename(deserialize = "leagueShortcut"))]
     pub league_shortcut: Option<String>,
     #[serde(rename(deserialize = "matchDateTimeUTC"))]
@@ -42,171 +40,96 @@ pub struct Match {
     #[serde(rename(deserialize = "goals"))]
     pub goals: Option<Vec<Goal>>,
     #[serde(rename(deserialize = "location"))]
-    pub location: Location,
+    pub location: Option<Location>,
     #[serde(rename(deserialize = "numberOfViewers"))]
     pub number_of_viewers: Option<i32>,
 }
 
-#[async_trait]
-impl<M: for<'de> serde::Deserialize<'de> + 'static> Get<M> for Match {
-    async fn get(id: i32) -> Result<M, Box<dyn Error>> {
+impl Match {
+    async fn get(id: i32) -> Result<Self, Box<dyn Error>> {
         let api_url = Url::parse(&format!("{}/getmatchdata/{}", API_BASE_URL, id))?;
 
-        crate::client::get::<M>(api_url).await
+        util::get::<Self>(api_url).await
     }
-}
 
-impl Match {
-    async fn by_teams(
-        team1_id: i32,
-        team2_id: i32
-    ) -> Result<Self, Box<dyn Error>> {
+    async fn by_teams(team1_id: i32, team2_id: i32) -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getmatchdata/{}/{}",
             API_BASE_URL, team1_id, team2_id
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Self>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::list::<Self>(api_url).await
     }
 
-    async fn by_league(
-        league: &str,
-        season: i32
-    ) -> Result<Vec<Self>, Box<dyn Error>> {
+    async fn by_league(league: &str, season: i32) -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getmatchdata/{}/{}",
             API_BASE_URL, league, season
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Vec<Self>>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::list::<Self>(api_url).await
     }
 
     async fn by_league_group(
         league: &str,
         season: i32,
-        group_order_id: i32
+        group_order_id: i32,
     ) -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getmatchdata/{}/{}/{}",
             API_BASE_URL, league, season, group_order_id
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Vec<Self>>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::list::<Self>(api_url).await
     }
 
-    async fn next_match_by_league_team(
-        league: &str,
-        team_id: i32
-    ) -> Result<Self, Box<dyn Error>> {
+    async fn next_match_by_league_team(league: i32, team_id: i32) -> Result<Self, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getnextmatchbyleagueteam/{}/{}",
             API_BASE_URL, league, team_id
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Self>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::get::<Self>(api_url).await
     }
 
-    async fn last_match_by_league_team(
-        league: &str,
-        team_id: i32
-    ) -> Result<Self, Box<dyn Error>> {
+    async fn last_match_by_league_team(league: i32, team_id: i32) -> Result<Self, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getlastmatchbyleagueteam/{}/{}",
             API_BASE_URL, league, team_id
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Self>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::get::<Self>(api_url).await
     }
 
-    async fn next_match_by_league(
-        league: &str,
-    ) -> Result<Self, Box<dyn Error>> {
+    async fn next_match_by_league(league: &str) -> Result<Self, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getnextmatchbyleagueshortcut/{}",
             API_BASE_URL, league
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Self>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::get::<Self>(api_url).await
     }
 
-    async fn last_match_by_league(
-        league: &str,
-    ) -> Result<Self, Box<dyn Error>> {
+    async fn last_match_by_league(league: &str) -> Result<Self, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getlastmatchbyleagueshortcut/{}",
             API_BASE_URL, league
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Self>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::get::<Self>(api_url).await
     }
 
     async fn by_league_team(
         league: &str,
         season: i32,
-        team_filter: &str
+        team_filter: &str,
     ) -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getmatchdata/{}/{}/{}",
             API_BASE_URL, league, season, team_filter
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Vec<Self>>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::list::<Self>(api_url).await
     }
 
     async fn by_team_range(
@@ -219,14 +142,7 @@ impl Match {
             API_BASE_URL, team_filter, week_count_past, week_count_future
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Vec<Self>>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::list::<Self>(api_url).await
     }
 
     async fn by_team_id_range(
@@ -239,14 +155,7 @@ impl Match {
             API_BASE_URL, team_id, week_count_past, week_count_future
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Vec<Self>>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        util::list::<Self>(api_url).await
     }
 }
 
@@ -254,15 +163,26 @@ impl Match {
 mod tests {
     use super::*;
     use std::error::Error;
+    use std::fs::File;
 
     const LEIPZIG_TEAM_ID: i32 = 1635;
     const KIEL_TEAM_ID: i32 = 104;
     const LEIPZIG_STPAULI_MATCH_ID: i32 = 72395;
     const BUNDESLIGA: &str = "bl1";
+    const BUNDESLIGA_ID: i32 = 4741;
+
+    #[test]
+    fn test_deserialize_match() {
+        let f = File::open("data/match-72395.json").unwrap();
+        let result: Result<Match, serde_json::Error> = serde_json::from_reader(f);
+        dbg!(&result);
+
+        assert!(result.is_ok());
+    }
 
     #[actix_web::test]
     async fn test_get() {
-        let match_id =LEIPZIG_STPAULI_MATCH_ID ; // Leipzig - St. Pauli
+        let match_id = LEIPZIG_STPAULI_MATCH_ID; // Leipzig - St. Pauli
         let r#match: Result<Match, Box<dyn Error>> = Match::get(match_id).await;
         dbg!(&r#match);
 
@@ -278,10 +198,10 @@ mod tests {
     async fn test_by_teams() {
         let team1 = LEIPZIG_TEAM_ID; // Leipzig
         let team2 = KIEL_TEAM_ID; // Holstein Kiel
-        let r#match: Result<Match, Box<dyn Error>> = Match::by_teams(team1, team2).await;
-        dbg!(&r#match);
+        let result: Result<Vec<Match>, Box<dyn Error>> = Match::by_teams(team1, team2).await;
+        dbg!(&result);
 
-        assert!(r#match.is_ok());
+        assert!(result.is_ok());
     }
 
     #[actix_web::test]
@@ -299,7 +219,8 @@ mod tests {
         let league = BUNDESLIGA;
         let season = 2024;
         let group_id = 1;
-        let matches: Result<Vec<Match>, Box<dyn Error>> = Match::by_league_group(league, season, group_id).await;
+        let matches: Result<Vec<Match>, Box<dyn Error>> =
+            Match::by_league_group(league, season, group_id).await;
         dbg!(&matches);
 
         assert!(matches.is_ok());
@@ -307,9 +228,10 @@ mod tests {
 
     #[actix_web::test]
     async fn test_next_match_by_league_team() {
-        let league = BUNDESLIGA;
+        let league = BUNDESLIGA_ID;
         let team_id = LEIPZIG_TEAM_ID;
-        let r#match: Result<Match, Box<dyn Error>> = Match::next_match_by_league_team(league, team_id).await;
+        let r#match: Result<Match, Box<dyn Error>> =
+            Match::next_match_by_league_team(league, team_id).await;
         dbg!(&r#match);
 
         assert!(r#match.is_ok());
@@ -317,21 +239,22 @@ mod tests {
 
     #[actix_web::test]
     async fn test_last_match_by_league_team() {
-        let league = BUNDESLIGA;
-        let team_id = 1;
-        let r#match: Result<Match, Box<dyn Error>> = Match::last_match_by_league_team(league, team_id).await;
-        dbg!(&r#match);
+        let league = BUNDESLIGA_ID;
+        let team_id = LEIPZIG_TEAM_ID;
+        let result: Result<Match, Box<dyn Error>> =
+            Match::last_match_by_league_team(league, team_id).await;
+        dbg!(&result);
 
-        assert!(r#match.is_ok());
+        assert!(result.is_ok());
     }
 
     #[actix_web::test]
     async fn test_next_match_by_league() {
         let league = BUNDESLIGA;
-        let r#match: Result<Match, Box<dyn Error>> = Match::next_match_by_league(league).await;
-        dbg!(&r#match);
+        let result: Result<Match, Box<dyn Error>> = Match::next_match_by_league(league).await;
+        dbg!(&result);
 
-        assert!(r#match.is_ok());
+        assert!(result.is_ok());
     }
 
     #[actix_web::test]
@@ -348,7 +271,8 @@ mod tests {
         let league = BUNDESLIGA;
         let season = 2024;
         let team = "Leipzig";
-        let matches: Result<Vec<Match>, Box<dyn Error>> = Match::by_league_team(league, season, team).await;
+        let matches: Result<Vec<Match>, Box<dyn Error>> =
+            Match::by_league_team(league, season, team).await;
         dbg!(&matches);
 
         assert!(matches.is_ok());
@@ -359,7 +283,8 @@ mod tests {
         let team_filter = "Leipzig";
         let week_count_past = 1;
         let week_count_future = 1;
-        let matches: Result<Vec<Match>, Box<dyn Error>> = Match::by_team_range(team_filter, week_count_past, week_count_future).await;
+        let matches: Result<Vec<Match>, Box<dyn Error>> =
+            Match::by_team_range(team_filter, week_count_past, week_count_future).await;
         dbg!(&matches);
 
         assert!(matches.is_ok());
@@ -370,7 +295,8 @@ mod tests {
         let team_id = LEIPZIG_TEAM_ID;
         let week_count_past = 1;
         let week_count_future = 1;
-        let matches: Result<Vec<Match>, Box<dyn Error>> = Match::by_team_id_range(team_id, week_count_past, week_count_future).await;
+        let matches: Result<Vec<Match>, Box<dyn Error>> =
+            Match::by_team_id_range(team_id, week_count_past, week_count_future).await;
         dbg!(&matches);
 
         assert!(matches.is_ok());
