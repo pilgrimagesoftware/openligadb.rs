@@ -46,7 +46,7 @@ jobs:
             with:
               use-cross: true
               command: test
-              args: --verbose --release --target ${{ matrix.target }}
+              args: --release --target ${{ matrix.target }}
 
     docs:
         needs: [tests]
@@ -68,7 +68,6 @@ jobs:
               with:
                   use-cross: true
                   command: rustdoc
-                  args: --verbose
             - name: Publish documentation
               uses: peaceiris/actions-gh-pages@v4
               with:
