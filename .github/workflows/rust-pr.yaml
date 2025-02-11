@@ -47,7 +47,6 @@ jobs:
           - name: Build
             uses: actions-rs/cargo@v1
             env:
-                # LLVM_PROFILE_FILE: "coverage/openligadb-%p.profraw"
                 RUSTFLAGS: "-C instrument-coverage"
             with:
                 use-cross: true

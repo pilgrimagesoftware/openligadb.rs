@@ -24,7 +24,7 @@ jobs:
                 include:
                     - name: Linux
                       os: ubuntu-latest
-                      target: x86_64-unknown-linux-musl
+                      target: x86_64-unknown-linux-gnu
                     # - build: macos
                     #   os: macos-latest
                     #   target: x86_64-apple-darwin
@@ -44,12 +44,21 @@ jobs:
               # Make Rust compile to our target (defined in the matrix)
               targets: ${{ matrix.target }}
               # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
+          - name: Install cargo-llvm-cov
+            run: |
+                    cargo install cargo-llvm-cov
           - name: Build
             uses: actions-rs/cargo@v1
+            env:
+                RUSTFLAGS: "-C instrument-coverage"
             with:
-              use-cross: true
-              command: test
-              args: --release --target ${{ matrix.target }}
+                use-cross: true
+                command: llvm-cov
+                args: --lcov --output-path target/lcov.info --release --target ${{ matrix.target }}
+          - uses: qltysh/qlty-action/coverage@main
+            with:
+                coverage-token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+                files: target/lcov.info
 
     docs:
         needs: [tests]
