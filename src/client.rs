@@ -11,8 +11,9 @@ pub trait List<M> {
     async fn list() -> Result<Vec<M>, Box<dyn Error>>;
 }
 
-pub trait Get {
-    async fn get<M>() -> Result<M, Box<dyn Error>>;
+#[async_trait]
+pub trait Get<M> {
+    async fn get(id: i32) -> Result<M, Box<dyn Error>>;
 }
 
 pub async fn list<M>(url: Url) -> Result<Vec<M>, Box<dyn Error>> where M : DeserializeOwned + 'static {

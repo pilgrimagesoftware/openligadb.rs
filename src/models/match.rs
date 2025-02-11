@@ -1,11 +1,12 @@
 use crate::constants::API_BASE_URL;
+use crate::client::Get;
 use crate::models::{
     goal::Goal, group::Group, location::Location, result::MatchResult, team::Team,
 };
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use url::Url;
-
+use async_trait::async_trait;
 use super::team;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -46,25 +47,16 @@ pub struct Match {
     pub number_of_viewers: Option<i32>,
 }
 
-impl Match {
-    async fn get(
-        id: i32
-    ) -> Result<Self, Box<dyn Error>> {
-        let api_url = Url::parse(&format!(
-            "{}/getmatchdata/{}",
-            API_BASE_URL, id
-        ))?;
+#[async_trait]
+impl<M: for<'de> serde::Deserialize<'de> + 'static> Get<M> for Match {
+    async fn get(id: i32) -> Result<M, Box<dyn Error>> {
+        let api_url = Url::parse(&format!("{}/getmatchdata/{}", API_BASE_URL, id))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await
-            .map_err(|e| e.to_string())?
-            .json::<Self>()
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(response)
+        crate::client::get::<M>(api_url).await
     }
+}
 
+impl Match {
     async fn by_teams(
         team1_id: i32,
         team2_id: i32
