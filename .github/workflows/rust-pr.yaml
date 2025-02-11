@@ -36,10 +36,6 @@ jobs:
               # Make Rust compile to our target (defined in the matrix)
               targets: ${{ matrix.target }}
               # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
-          - name: Install OpenSSL dev
-            if: ${{ matrix.os }} == 'ubuntu-latest'
-            run: |
-                  sudo apt-get install -y libssl-dev
           - name: Build
             uses: actions-rs/cargo@v1
             with:
