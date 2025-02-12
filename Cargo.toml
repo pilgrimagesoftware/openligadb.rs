@@ -32,3 +32,6 @@ openssl-sys = { version = "0.9", features = ["vendored"] }
 
 [dev-dependencies]
 actix-web = "4.0"
+
+[build]
+profiler = true
