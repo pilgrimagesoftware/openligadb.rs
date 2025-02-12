@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["goal","group","league","location","match","result","sport","table","team"]};
