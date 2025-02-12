@@ -1,7 +1,7 @@
 name: CI
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency: ci
 
@@ -83,6 +83,8 @@ jobs:
                   command: rustdoc
             - name: Publish documentation
               uses: peaceiris/actions-gh-pages@v4
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   publish_dir: ./target/doc/openligadb
