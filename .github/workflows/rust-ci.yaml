@@ -41,12 +41,13 @@ jobs:
             uses: dtolnay/rust-toolchain@stable
             # Arguments to pass in
             with:
-              # Make Rust compile to our target (defined in the matrix)
-              targets: ${{ matrix.target }}
-              # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
+                # Make Rust compile to our target (defined in the matrix)
+                targets: ${{ matrix.target }}
+                # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
+                components: clippy rustfmt llvm-tools-preview
           - name: Install cargo-llvm-cov
             run: |
-                    cargo install cargo-llvm-cov
+                  cargo install cargo-llvm-cov
           - name: Build
             uses: actions-rs/cargo@v1
             env:
