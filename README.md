@@ -11,7 +11,7 @@
 [crates-badge]: https://img.shields.io/crates/v/openligadb.svg
 [crates-url]: https://crates.io/crates/openligadb
 [mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
-[mit-url]: https://github.com/pilgrimagesoftware/openligadb.rs/blob/master/LICENSE
+[mit-url]: https://github.com/pilgrimagesoftware/openligadb.rs/blob/master/LICENSE.md
 [docs-badge]: https://docs.rs/openligadb/badge.svg
 [docs]: https://docs.rs/openligadb
 [rust-badge]: https://img.shields.io/badge/rust-1.82.0%2B-blue.svg?maxAge=3600
