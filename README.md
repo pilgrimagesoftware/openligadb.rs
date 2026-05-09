@@ -25,7 +25,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-openligadb = "0.0.1"
+openligadb = "0.0.9"
 ```
 
 and this to your code:
@@ -44,7 +44,7 @@ let leagues = openligadb::models::league::list()?;
 
 Licensed under:
 
- * MIT license ([LICENSE-MIT](LICENSE) or https://opensource.org/licenses/MIT)
+ * MIT license ([LICENSE-MIT](LICENSE.md) or https://opensource.org/licenses/MIT)
 
 ## Contribution
 
