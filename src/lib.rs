@@ -1,7 +1,7 @@
-//! A Rust library for accessing the [OpenLigaDB] [API].
-//!
-//! [OpenLigaDB]: https://www.openligadb.de/
-//! [API]: https://api.openligadb.de/index.html
+#![doc = r"A Rust library for accessing the [OpenLigaDB] [API].
+
+[OpenLigaDB]: https://www.openligadb.de/
+[API]: https://api.openligadb.de/index.html"]
 
 #![allow(
     clippy::doc_markdown,

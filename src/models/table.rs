@@ -1,4 +1,4 @@
-//! League table object and methods
+#![doc = r"League table object and methods"]
 use crate::constants::API_BASE_URL;
 use crate::util;
 use serde::{Deserialize, Serialize};
