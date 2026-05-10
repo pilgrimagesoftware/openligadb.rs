@@ -1,0 +1,8 @@
+- [ ] 8.1 Add `chrono = { version = "0.4", features = ["serde"] }` to `[dependencies]` in `openligadb.rs/Cargo.toml`
+- [ ] 8.2 Add `use chrono::{DateTime, FixedOffset, Utc};` import to `openligadb.rs/src/models/match.rs`
+- [ ] 8.3 Change `Match::when: Option<String>` to `Option<DateTime<FixedOffset>>`
+- [ ] 8.4 Change `Match::when_utc: Option<String>` to `Option<DateTime<Utc>>`
+- [ ] 8.5 Change `Match::last_update: Option<String>` to `Option<DateTime<FixedOffset>>`
+- [ ] 8.6 Verify the existing `test_deserialize_match` test in `match.rs` still passes against the JSON fixture at `data/match-72395.json`
+- [ ] 8.7 Update `app/src-tauri/src/lib.rs` if any command accesses these fields as raw strings (check for `.when`, `.when_utc`, `.last_update` usage)
+- [ ] 8.8 Run `cargo test` in both `openligadb.rs/` and `app/src-tauri/` to confirm no regressions
