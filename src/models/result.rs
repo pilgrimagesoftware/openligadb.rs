@@ -1,4 +1,4 @@
-//! Match result objects and methods
+#![doc = r"Match result objects and methods"]
 use crate::constants::API_BASE_URL;
 use serde::{Deserialize, Serialize};
 use std::error::Error;

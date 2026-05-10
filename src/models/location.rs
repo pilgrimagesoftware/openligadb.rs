@@ -1,4 +1,4 @@
-//! The Location object
+#![doc = r"The Location object"]
 use serde::{Deserialize, Serialize};
 
 /// A data structure representing a match location

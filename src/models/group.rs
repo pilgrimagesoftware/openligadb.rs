@@ -1,4 +1,4 @@
-//! The Group object and methods
+#![doc = r"The Group object and methods"]
 use crate::constants::API_BASE_URL;
 use serde::{Deserialize, Serialize};
 use std::error::Error;

@@ -1,6 +1,8 @@
 /**
- * Constants
+ * constants.rs
  * @paulyhedral
+ *
+ * Constants
  */
 
 /// The default URL for the OpenLigaDB API.

@@ -1,4 +1,4 @@
-//! The League object and methods
+#![doc = r"The League object and methods"]
 use crate::constants::API_BASE_URL;
 use crate::models::sport::Sport;
 use crate::util;

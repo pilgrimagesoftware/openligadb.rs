@@ -1,4 +1,4 @@
-//! The Match object and methods
+#![doc = r"The Match object and methods"]
 use crate::constants::API_BASE_URL;
 use crate::models::{
     goal::Goal, group::Group, location::Location, result::MatchResult, team::Team,

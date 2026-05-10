@@ -1,3 +1,7 @@
+#[doc = r"* util.rs
+ * @paulyhedral
+ *
+ * Utility functions for making HTTP requests and deserializing JSON responses."]
 use reqwest;
 use serde::de::DeserializeOwned;
 use std::error::Error;

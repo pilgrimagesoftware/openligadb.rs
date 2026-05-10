@@ -1,4 +1,4 @@
-//! Goal objects
+#![doc = r"Goal objects"]
 use crate::constants::API_BASE_URL;
 use crate::util;
 use serde::{Deserialize, Serialize};
