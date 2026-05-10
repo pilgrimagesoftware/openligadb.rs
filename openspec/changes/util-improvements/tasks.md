@@ -1,0 +1,5 @@
+- [ ] 4.1 Remove `use reqwest;` from the top of `util.rs`
+- [ ] 4.2 Change `reqwest::get(url.as_str())` to `reqwest::get(url)` in both `list` and `get`
+- [ ] 4.3 Remove `+ 'static` from the `where M: DeserializeOwned + 'static` bound in both functions
+- [ ] 4.4 Change `pub async fn list` and `pub async fn get` to `pub(crate) async fn list` and `pub(crate) async fn get`
+- [ ] 4.5 Run `cargo build` in `openligadb.rs/` to confirm the crate still compiles

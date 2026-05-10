@@ -1,0 +1,10 @@
+- [ ] 5.1 Add `thiserror = "1"` to `[dependencies]` in `openligadb.rs/Cargo.toml`
+- [ ] 5.2 Create `openligadb.rs/src/error.rs` with `pub enum OpenLigaError` and three variants: `Http(reqwest::Error)`, `Json(reqwest::Error)`, `Url(url::ParseError)`; derive with `#[derive(thiserror::Error, Debug)]` and `#[from]` on each variant
+- [ ] 5.3 Add `pub mod error;` to `openligadb.rs/src/lib.rs` and re-export `pub use error::OpenLigaError`
+- [ ] 5.4 Update `util::list` return type from `Result<Vec<M>, Box<dyn Error>>` to `Result<Vec<M>, OpenLigaError>`
+- [ ] 5.5 Update `util::get` return type from `Result<M, Box<dyn Error>>` to `Result<M, OpenLigaError>`
+- [ ] 5.6 Update all model method signatures (e.g., `Group::available`, `Match::by_league`, `Team::available`, `GoalGetter::list`) to return `Result<_, OpenLigaError>`
+- [ ] 5.7 Remove any `map_err(|e| Box::new(e) as Box<dyn Error>)` or similar conversions that are now handled by `#[from]`
+- [ ] 5.8 Run `cargo build` in `openligadb.rs/` to confirm the crate compiles with the new error type
+- [ ] 5.9 Run `cargo test` in `openligadb.rs/` to confirm all tests pass
+- [ ] 5.10 Verify that `app/src-tauri` still compiles (`.map_err(|e| e.to_string())` at command boundaries should continue to work via the `Display` impl from `thiserror`)

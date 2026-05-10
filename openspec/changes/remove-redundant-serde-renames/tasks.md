@@ -1,0 +1,4 @@
+- [ ] 7.1 In `openligadb.rs/src/models/result.rs`, remove `#[serde(rename(deserialize = "id"))]` from `GlobalResultInfo::id`
+- [ ] 7.2 In `openligadb.rs/src/models/result.rs`, remove `#[serde(rename(deserialize = "name"))]` from `GlobalResultInfo::name`
+- [ ] 7.3 In `openligadb.rs/src/models/goal.rs`, remove `#[serde(rename(deserialize = "comment"))]` from `Goal::comment`
+- [ ] 7.4 Run `cargo test -p openligadb` to confirm deserialization tests still pass

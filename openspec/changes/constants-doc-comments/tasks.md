@@ -1,0 +1,3 @@
+- [ ] 3.1 Replace the `/** * Constants * @paulyhedral */` block in `constants.rs` with `//! Constants for the OpenLigaDB API client.`
+- [ ] 3.2 Change `pub const API_BASE_URL : &str` to `pub const API_BASE_URL: &str` (remove extra space)
+- [ ] 3.3 Run `cargo fmt --check` in `openligadb.rs/` to confirm no further formatting issues

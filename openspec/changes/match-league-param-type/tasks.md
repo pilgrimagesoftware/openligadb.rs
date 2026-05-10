@@ -1,0 +1,7 @@
+- [ ] 9.1 In `Match::next_match_by_league_team`, rename parameter `league: i32` to `league_id: i32`
+- [ ] 9.2 In `Match::last_match_by_league_team`, rename parameter `league: i32` to `league_id: i32`
+- [ ] 9.3 Update the URL format string in both methods to use `league_id` instead of `league`
+- [ ] 9.4 Update the doc comment for `next_match_by_league_team`: change `* \`league\` - The league shortcut` to `* \`league_id\` - The numeric league ID; see [League#id](crate::models::league::League)`
+- [ ] 9.5 Update the doc comment for `last_match_by_league_team` similarly
+- [ ] 9.6 Update the test in `match.rs`: rename the local variable `let league = BUNDESLIGA_ID;` to `let league_id = BUNDESLIGA_ID;` in both test functions and update the call sites
+- [ ] 9.7 Run `cargo test -p openligadb` to confirm both affected tests still pass

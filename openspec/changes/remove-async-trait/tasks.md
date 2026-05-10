@@ -1,0 +1,2 @@
+- [ ] 2.1 Remove `async-trait = "0.1"` from `[dependencies]` in `openligadb.rs/Cargo.toml`
+- [ ] 2.2 Run `cargo build` in `openligadb.rs/` to confirm the crate still compiles cleanly
