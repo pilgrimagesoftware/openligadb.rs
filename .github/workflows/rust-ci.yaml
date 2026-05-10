@@ -1,7 +1,7 @@
 name: CI
 
 permissions:
-  contents: write
+    contents: write
 
 concurrency: ci
 
@@ -30,57 +30,68 @@ jobs:
                     #   target: x86_64-apple-darwin
 
         steps:
-          - uses: actions/checkout@v6
-          - name: Get language version
-            id: get_lang_version
-            run: |
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Get language version
+              id: get_lang_version
+              run: |
                   v=$(cat .rust-version)
                   echo "lang_version=$v" >> $GITHUB_OUTPUT
-          - name: Install Rust
-            # Or @nightly if you want
-            uses: dtolnay/rust-toolchain@stable
-            # Arguments to pass in
-            with:
-                # Make Rust compile to our target (defined in the matrix)
-                targets: ${{ matrix.target }}
-                # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
-                components: clippy rustfmt llvm-tools-preview
-          - name: Install cargo-llvm-cov
-            run: |
+
+            - name: Install Rust
+              # Or @nightly if you want
+              uses: dtolnay/rust-toolchain@stable
+              # Arguments to pass in
+              with:
+                  # Make Rust compile to our target (defined in the matrix)
+                  targets: ${{ matrix.target }}
+                  # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
+                  components: clippy rustfmt llvm-tools-preview
+
+            - name: Install cargo-llvm-cov
+              run: |
                   cargo install cargo-llvm-cov
-          - name: Build
-            uses: actions-rs/cargo@v1
-            env:
-                RUSTFLAGS: "-C instrument-coverage"
-            with:
-                use-cross: true
-                command: llvm-cov
-                args: --lcov --output-path target/lcov.info --release --target ${{ matrix.target }}
-          - uses: qltysh/qlty-action/coverage@main
-            with:
-                coverage-token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
-                files: target/lcov.info
+
+            - name: Build
+              uses: actions-rs/cargo@v1
+              env:
+                  RUSTFLAGS: "-C instrument-coverage"
+              with:
+                  use-cross: true
+                  command: llvm-cov
+                  args: --lcov --output-path target/lcov.info --release --target ${{ matrix.target }}
+
+            - uses: qltysh/qlty-action/coverage@main
+              with:
+                  coverage-token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+                  files: target/lcov.info
 
     docs:
         needs: [tests]
         runs-on: ubuntu-latest
         concurrency: docs
         steps:
-            - uses: actions/checkout@v6
+            - name: Checkout
+              uses: actions/checkout@v6
+
             - name: Get language version
               id: get_lang_version
               run: |
-                    v=$(cat .rust-version)
-                    echo "lang_version=$v" >> $GITHUB_OUTPUT
+                  v=$(cat .rust-version)
+                  echo "lang_version=$v" >> $GITHUB_OUTPUT
+
             - name: Install Rust
               # Or @nightly if you want
               uses: dtolnay/rust-toolchain@stable
               # Arguments to pass in
+
             - name: Build documentation
               uses: actions-rs/cargo@v1
               with:
                   use-cross: true
                   command: rustdoc
+
             - name: Publish documentation
               uses: peaceiris/actions-gh-pages@v4
               env:
@@ -92,31 +103,38 @@ jobs:
     release:
         needs: [tests]
         runs-on: ubuntu-latest
+        if: ${{ github.repository_owner == 'pilgrimagesoftware' }}
         permissions:
             contents: write
         steps:
-            - uses: actions/checkout@v6
+            - name: Checkout
+              uses: actions/checkout@v6
               with:
                   fetch-depth: 0
+
             - name: Install Rust
               uses: dtolnay/rust-toolchain@stable
+
             - name: Bump version and push tag
               id: bump_version
               uses: anothrNick/github-tag-action@v1
               env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                WITH_V: false
-                DEFAULT_BUMP: patch
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  WITH_V: false
+                  DEFAULT_BUMP: patch
+
             - name: Update Cargo.toml
               run: |
-                    sed -i 's/^version = ".*"$/version = "'${{ steps.bump_version.outputs.new_tag }}'"/' Cargo.toml
+                  sed -i 's/^version = ".*"$/version = "'${{ steps.bump_version.outputs.new_tag }}'"/' Cargo.toml
+
             - name: Commit and push
               run: |
-                    git config --global user.email "ci@pilgrimagesoftware.com"
-                    git config --global user.name "Pilgrimage Software CI"
-                    git add Cargo.toml
-                    git commit -m "Update Cargo.toml on ${{ github.ref_name }} with version: ${{ steps.bump_version.outputs.new_tag }}"
-                    git push origin --tags
+                  git config --global user.email "ci@pilgrimagesoftware.com"
+                  git config --global user.name "Pilgrimage Software CI"
+                  git add Cargo.toml
+                  git commit -m "Update Cargo.toml on ${{ github.ref_name }} with version: ${{ steps.bump_version.outputs.new_tag }}"
+                  git push origin --tags
+
             - name: Run release-plz
               uses: release-plz/action@v0.5
               with:

@@ -1,8 +1,8 @@
 name: PR
 
 permissions:
-  contents: read
-  pull-requests: write
+    contents: read
+    pull-requests: write
 
 concurrency: pr-${{ github.ref }}
 
@@ -26,38 +26,45 @@ jobs:
                     #   target: x86_64-apple-darwin
 
         steps:
-          - uses: actions/checkout@v6
-          - name: Get language version
-            id: get_lang_version
-            run: |
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Get language version
+              id: get_lang_version
+              run: |
                   v=$(cat .rust-version)
                   echo "lang_version=$v" >> $GITHUB_OUTPUT
-          - name: Install Rust
-            # Or @nightly if you want
-            uses: dtolnay/rust-toolchain@stable
-            # Arguments to pass in
-            with:
-                # Make Rust compile to our target (defined in the matrix)
-                targets: ${{ matrix.target }}
-                # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
-                components: clippy rustfmt llvm-tools-preview
-          - name: Install cargo-llvm-cov
-            run: |
+
+            - name: Install Rust
+              # Or @nightly if you want
+              uses: dtolnay/rust-toolchain@stable
+              # Arguments to pass in
+              with:
+                  # Make Rust compile to our target (defined in the matrix)
+                  targets: ${{ matrix.target }}
+                  # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
+                  components: clippy rustfmt llvm-tools-preview
+
+            - name: Install cargo-llvm-cov
+              run: |
                   cargo install cargo-llvm-cov
-          - name: Build
-            uses: actions-rs/cargo@v1
-            env:
-                RUSTFLAGS: "-C instrument-coverage"
-            with:
-                use-cross: true
-                command: llvm-cov
-                args: --lcov --output-path target/lcov.info --release --target ${{ matrix.target }}
-          - uses: qltysh/qlty-action/coverage@main
-            with:
-                coverage-token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
-                files: target/lcov.info
-          - name: Build documentation
-            uses: actions-rs/cargo@v1
-            with:
-                use-cross: true
-                command: rustdoc
+
+            - name: Build
+              uses: actions-rs/cargo@v1
+              env:
+                  RUSTFLAGS: "-C instrument-coverage"
+              with:
+                  use-cross: true
+                  command: llvm-cov
+                  args: --lcov --output-path target/lcov.info --release --target ${{ matrix.target }}
+
+            - uses: qltysh/qlty-action/coverage@main
+              with:
+                  token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+                  files: target/lcov.info
+
+            - name: Build documentation
+              uses: actions-rs/cargo@v1
+              with:
+                  use-cross: true
+                  command: rustdoc
