@@ -31,7 +31,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
 
             - name: Get language version
               id: get_lang_version
@@ -73,7 +73,7 @@ jobs:
         concurrency: docs
         steps:
             - name: Checkout
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
 
             - name: Get language version
               id: get_lang_version
@@ -108,7 +108,7 @@ jobs:
             contents: write
         steps:
             - name: Checkout
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
               with:
                   fetch-depth: 0
 
