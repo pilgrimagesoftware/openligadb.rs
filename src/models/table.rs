@@ -1,8 +1,12 @@
 #![doc = r"League table object and methods"]
+#[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
+#[cfg(feature = "http-client")]
 use crate::util;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "http-client")]
 use std::error::Error;
+#[cfg(feature = "http-client")]
 use url::Url;
 
 /// A data structure representing an entry in a league's table.
@@ -46,6 +50,7 @@ pub struct TableTeam {
     pub goal_difference: i32,
 }
 
+#[cfg(feature = "http-client")]
 impl TableTeam {
     /// Get the Bundesliga table
     ///
@@ -78,7 +83,7 @@ impl TableTeam {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "http-client"))]
 mod tests {
     use super::*;
     use std::error::Error;

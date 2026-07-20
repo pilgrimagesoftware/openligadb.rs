@@ -1,8 +1,12 @@
 #![doc = r"The Sport object and methods"]
+#[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
+#[cfg(feature = "http-client")]
 use crate::util;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "http-client")]
 use std::error::Error;
+#[cfg(feature = "http-client")]
 use url::Url;
 
 /// A data structure representing a sport
@@ -16,6 +20,7 @@ pub struct Sport {
     pub name: Option<String>,
 }
 
+#[cfg(feature = "http-client")]
 impl Sport {
     /// Gets a list of sports
     ///
@@ -27,7 +32,7 @@ impl Sport {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "http-client"))]
 mod tests {
     use super::*;
     use std::error::Error;

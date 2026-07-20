@@ -36,6 +36,21 @@ use openligadb;
 let leagues = openligadb::models::league::list()?;
 ```
 
+## Features
+
+`http-client` (default-on) gates `reqwest`, `async-trait`, and `url`, along with every
+model's network methods (`League::list`, `Match::get`, etc.). Disable it if you only need
+the model structs and their `serde` impls — for example, deserializing responses fetched
+through a transport other than `reqwest` (a WASM host `fetch` capability, a proxy, etc.):
+
+```toml
+[dependencies]
+openligadb = { version = "0.0.9", default-features = false }
+```
+
+With `http-client` off, the crate has no networking dependencies and cross-compiles to
+targets `reqwest` can't reach (e.g. `wasm32-wasip2`).
+
 ## Change log
 
 [CHANGELOG](CHANGELOG.md)

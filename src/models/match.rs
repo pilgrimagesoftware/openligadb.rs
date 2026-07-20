@@ -1,11 +1,15 @@
 #![doc = r"The Match object and methods"]
+#[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
 use crate::models::{
     goal::Goal, group::Group, location::Location, result::MatchResult, team::Team,
 };
+#[cfg(feature = "http-client")]
 use crate::util;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "http-client")]
 use std::error::Error;
+#[cfg(feature = "http-client")]
 use url::Url;
 
 /// A data structure representing a match
@@ -64,6 +68,7 @@ pub struct Match {
     pub number_of_viewers: Option<i32>,
 }
 
+#[cfg(feature = "http-client")]
 impl Match {
     /// Get a match
     ///
@@ -256,13 +261,20 @@ impl Match {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::error::Error;
     use std::fs::File;
 
+    #[cfg(feature = "http-client")]
+    use std::error::Error;
+
+    #[cfg(feature = "http-client")]
     const LEIPZIG_TEAM_ID: i32 = 1635;
+    #[cfg(feature = "http-client")]
     const KIEL_TEAM_ID: i32 = 104;
+    #[cfg(feature = "http-client")]
     const LEIPZIG_STPAULI_MATCH_ID: i32 = 72395;
+    #[cfg(feature = "http-client")]
     const BUNDESLIGA: &str = "bl1";
+    #[cfg(feature = "http-client")]
     const BUNDESLIGA_ID: i32 = 4741;
 
     #[test]
@@ -274,6 +286,7 @@ mod tests {
         assert!(result.is_ok());
     }
 
+    #[cfg(feature = "http-client")]
     #[actix_web::test]
     async fn test_get() {
         let match_id = LEIPZIG_STPAULI_MATCH_ID; // Leipzig - St. Pauli
@@ -288,6 +301,7 @@ mod tests {
         // assert_eq!(&r#match.as_ref().unwrap().group.name.unwrap(), "21. Spieltag");
     }
 
+    #[cfg(feature = "http-client")]
     #[actix_web::test]
     async fn test_by_teams() {
         let team1 = LEIPZIG_TEAM_ID; // Leipzig
@@ -298,6 +312,7 @@ mod tests {
         assert!(result.is_ok());
     }
 
+    #[cfg(feature = "http-client")]
     #[actix_web::test]
     async fn test_by_league() {
         let league = BUNDESLIGA;
@@ -308,6 +323,7 @@ mod tests {
         assert!(matches.is_ok());
     }
 
+    #[cfg(feature = "http-client")]
     #[actix_web::test]
     async fn test_by_league_group() {
         let league = BUNDESLIGA;
@@ -332,6 +348,7 @@ mod tests {
     //     assert!(r#match.is_ok());
     // }
 
+    #[cfg(feature = "http-client")]
     #[actix_web::test]
     async fn test_last_match_by_league_team() {
         let league = BUNDESLIGA_ID;
@@ -343,6 +360,7 @@ mod tests {
         assert!(result.is_ok());
     }
 
+    #[cfg(feature = "http-client")]
     #[actix_web::test]
     async fn test_next_match_by_league() {
         let league = BUNDESLIGA;
@@ -352,6 +370,7 @@ mod tests {
         assert!(result.is_ok());
     }
 
+    #[cfg(feature = "http-client")]
     #[actix_web::test]
     async fn test_last_match_by_league() {
         let league = BUNDESLIGA;
@@ -361,6 +380,7 @@ mod tests {
         assert!(r#match.is_ok());
     }
 
+    #[cfg(feature = "http-client")]
     #[actix_web::test]
     async fn test_by_league_team() {
         let league = BUNDESLIGA;
@@ -373,6 +393,7 @@ mod tests {
         assert!(matches.is_ok());
     }
 
+    #[cfg(feature = "http-client")]
     #[actix_web::test]
     async fn test_by_team_range() {
         let team_filter = "Leipzig";
@@ -385,6 +406,7 @@ mod tests {
         assert!(matches.is_ok());
     }
 
+    #[cfg(feature = "http-client")]
     #[actix_web::test]
     async fn test_by_team_id_range() {
         let team_id = LEIPZIG_TEAM_ID;

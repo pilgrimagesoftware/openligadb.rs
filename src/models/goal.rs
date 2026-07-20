@@ -1,8 +1,12 @@
 #![doc = r"Goal objects"]
+#[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
+#[cfg(feature = "http-client")]
 use crate::util;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "http-client")]
 use std::error::Error;
+#[cfg(feature = "http-client")]
 use url::Url;
 
 /// A data structure representing a goal
@@ -54,6 +58,7 @@ pub struct GoalGetter {
     pub goal_count: i32,
 }
 
+#[cfg(feature = "http-client")]
 impl GoalGetter {
     /// List goal getters
     ///
@@ -71,7 +76,7 @@ impl GoalGetter {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "http-client"))]
 mod tests {
     use super::*;
     use std::error::Error;

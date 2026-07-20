@@ -1,7 +1,10 @@
 #![doc = r"The Group object and methods"]
+#[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "http-client")]
 use std::error::Error;
+#[cfg(feature = "http-client")]
 use url::Url;
 
 /// A data structure representing a group
@@ -18,19 +21,15 @@ pub struct Group {
     pub order_id: i32,
 }
 
+#[cfg(feature = "http-client")]
 impl Group {
     /// Get the current league group
     ///
     /// Fetches the current group for a specific league.
     ///
     /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
-    pub async fn current(
-        league: &str
-    ) -> Result<Self, Box<dyn Error>> {
-        let api_url = Url::parse(&format!(
-            "{}/getcurrentgroup/{}",
-            API_BASE_URL, league
-        ))?;
+    pub async fn current(league: &str) -> Result<Self, Box<dyn Error>> {
+        let api_url = Url::parse(&format!("{}/getcurrentgroup/{}", API_BASE_URL, league))?;
 
         let response = reqwest::get(api_url.as_str())
             .await
@@ -48,10 +47,7 @@ impl Group {
     ///
     /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
     /// * `season` - The season, usually the starting year
-    pub async fn available(
-        league: &str,
-        season: i32
-    ) -> Result<Vec<Self>, Box<dyn Error>> {
+    pub async fn available(league: &str, season: i32) -> Result<Vec<Self>, Box<dyn Error>> {
         let api_url = Url::parse(&format!(
             "{}/getavailablegroups/{}/{}",
             API_BASE_URL, league, season
@@ -68,7 +64,7 @@ impl Group {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "http-client"))]
 mod tests {
     use super::*;
     use std::error::Error;

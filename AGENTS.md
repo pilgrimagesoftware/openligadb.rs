@@ -37,11 +37,39 @@ The crate is published to [crates.io](https://crates.io/crates/openligadb) and d
 ## Adding a New Model
 
 1. Create `src/models/<name>.rs` following the pattern of an existing model (e.g. `league.rs`).
-2. Derive `serde::Deserialize` (and `Serialize` if serialization is needed) on the struct.
+2. Derive `serde::Deserialize` (and `Serialize` if serialization is needed) on the struct — this
+   part must stay reachable with `default-features = false` (see "Feature gating" below).
 3. Implement any public query functions using `crate::util::list` or `crate::util::get`, passing a
    URL built from `crate::constants::API_BASE_URL`.
 4. Register the new module in `src/models/mod.rs`.
 5. Add doc comments to every public struct, field, and function.
+
+## Feature gating
+
+The crate has an `http-client` feature (default-on) that gates `reqwest`, `async-trait`, `url`,
+and every network method, so a consumer that only needs the model structs and their `serde`
+impls (e.g. a WASM component deserializing bytes fetched through its own host `fetch`
+capability) can depend on this crate with `default-features = false` and pull in no networking
+stack — see `openspec/changes/gate-wasm-networking/design.md` for the full rationale.
+
+**Any new network method on a model `impl` block must be gated the same way as the existing
+ones**, or it silently reintroduces `reqwest` as a mandatory dependency:
+
+- Put `#[cfg(feature = "http-client")]` on the `impl` block (or the individual method, if the
+  block also holds non-network methods).
+- Gate any `use` statement that exists only to support a gated method (`crate::util`,
+  `std::error::Error`, `url::Url`, `crate::constants::API_BASE_URL`) the same way — an ungated
+  `use` of something only referenced by gated code fails `--no-default-features` builds with an
+  unused-import/dead-code error.
+- Gate the corresponding test function(s) with `#[cfg(feature = "http-client")]` alongside
+  `#[cfg(test)]`, unless the whole test module only contains network tests, in which case gate
+  the module itself (`#[cfg(all(test, feature = "http-client"))]`).
+- `cargo check --no-default-features` and `cargo clippy --no-default-features --all-targets -- -D
+  warnings` must both pass — CI runs both alongside the default-feature checks.
+
+Struct definitions and their `serde` derives are never gated, even for fields/structs that exist
+only to be returned by a network method (e.g. `GlobalResultInfo`, `Goal`) — a consumer that
+deserializes a fixture or a response fetched by its own transport still needs the type.
 
 ## Running Checks Locally
 
@@ -57,4 +85,9 @@ cargo clippy -- -D warnings
 
 # Format
 cargo fmt --check
+
+# Verify the http-client feature is genuinely optional
+cargo check --no-default-features
+cargo test --no-default-features
+cargo clippy --no-default-features --all-targets -- -D warnings
 ```

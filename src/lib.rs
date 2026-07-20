@@ -2,7 +2,6 @@
 
 [OpenLigaDB]: https://www.openligadb.de/
 [API]: https://api.openligadb.de/index.html"]
-
 #![allow(
     clippy::doc_markdown,
     clippy::module_name_repetitions,
@@ -14,4 +13,5 @@
 
 mod constants;
 pub mod models;
+#[cfg(feature = "http-client")]
 mod util;

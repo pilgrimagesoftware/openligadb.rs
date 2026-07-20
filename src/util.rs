@@ -2,12 +2,14 @@
  * @paulyhedral
  *
  * Utility functions for making HTTP requests and deserializing JSON responses."]
-use reqwest;
 use serde::de::DeserializeOwned;
 use std::error::Error;
 use url::Url;
 
-pub async fn list<M>(url: Url) -> Result<Vec<M>, Box<dyn Error>> where M : DeserializeOwned + 'static {
+pub async fn list<M>(url: Url) -> Result<Vec<M>, Box<dyn Error>>
+where
+    M: DeserializeOwned + 'static,
+{
     let response = reqwest::get(url.as_str())
         .await
         .map_err(|e| e.to_string())?
@@ -18,7 +20,10 @@ pub async fn list<M>(url: Url) -> Result<Vec<M>, Box<dyn Error>> where M : Deser
     Ok(response)
 }
 
-pub async fn get<M>(url: Url) -> Result<M, Box<dyn Error>> where M : DeserializeOwned + 'static {
+pub async fn get<M>(url: Url) -> Result<M, Box<dyn Error>>
+where
+    M: DeserializeOwned + 'static,
+{
     let response = reqwest::get(url.as_str())
         .await
         .map_err(|e| e.to_string())?
