@@ -73,6 +73,7 @@ gated `[dependencies]` entry):**
 | `src/models/result.rs` | `impl ResultInfo { list }` and matching `use`s (`GlobalResultInfo`, `MatchResult`, `ResultInfo`'s struct definitions are ungated — pure data) |
 | `src/models/goal.rs` | `impl GoalGetter { list }` and matching `use`s (`Goal`'s struct definition is ungated — pure data, never fetched standalone) |
 | `src/models/location.rs` | nothing — pure data struct, never has network methods |
+| `src/constants.rs` | `API_BASE_URL` (deviates from this row's original plan — see below) |
 
 Every `#[cfg(test)] mod tests` block that exercises a gated network method also needs
 `#[cfg(feature = "http-client")]` alongside `#[cfg(test)]`, so `cargo test
@@ -80,10 +81,16 @@ Every `#[cfg(test)] mod tests` block that exercises a gated network method also 
 `test_deserialize_match` in `src/models/match.rs` (deserializes a fixture file, no network
 call) stays ungated — it's exactly the kind of usage this change is meant to support.
 
-**`constants::API_BASE_URL` stays ungated.**
-Rationale: it's a plain `&str` constant with no dependency footprint; gating it would only
-force every gated `use crate::constants::API_BASE_URL;` to also be conditional for no
-benefit, since the constant itself compiles fine either way.
+**`constants::API_BASE_URL` is gated too, despite this document's original plan to leave it
+ungated.**
+The original rationale ("gating it would only force every gated `use` to also be
+conditional, for no benefit") didn't survive implementation: every `use
+crate::constants::API_BASE_URL;` across the model files ended up gated regardless
+(2.3-2.10), since it's only ever referenced from inside a gated network method. With no
+ungated reference left anywhere in the crate, an ungated `pub const API_BASE_URL` becomes
+genuine dead code under `--no-default-features`, which `cargo clippy -- -D warnings` flags
+as an error, not a warning. Gating the constant declaration itself removes that failure and
+costs nothing, since nothing outside gated code was ever going to reference it.
 
 ## Risks / Trade-offs
 

@@ -68,3 +68,27 @@ jobs:
               with:
                   use-cross: true
                   command: rustdoc
+
+    no-default-features:
+        name: No default features (wasm32-wasip2)
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Install Rust
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  targets: wasm32-wasip2
+
+            - name: Check (native, no default features)
+              run: |
+                  cargo check --no-default-features
+
+            - name: Test (native, no default features)
+              run: |
+                  cargo test --no-default-features
+
+            - name: Check (wasm32-wasip2, no default features)
+              run: |
+                  cargo check --no-default-features --target wasm32-wasip2

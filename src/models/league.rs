@@ -1,9 +1,13 @@
 #![doc = r"The League object and methods"]
+#[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
 use crate::models::sport::Sport;
+#[cfg(feature = "http-client")]
 use crate::util;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "http-client")]
 use std::error::Error;
+#[cfg(feature = "http-client")]
 use url::Url;
 
 /// A data structure
@@ -25,6 +29,7 @@ pub struct League {
     pub sport: Sport,
 }
 
+#[cfg(feature = "http-client")]
 impl League {
     /// List the leagues
     ///
@@ -36,7 +41,7 @@ impl League {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "http-client"))]
 mod tests {
     use super::*;
     use std::error::Error;

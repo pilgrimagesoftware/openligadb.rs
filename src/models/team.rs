@@ -1,9 +1,13 @@
 #![doc = r"The Team object and methods"]
+#[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
-use serde::{Deserialize, Serialize};
-use std::error::Error;
-use url::Url;
+#[cfg(feature = "http-client")]
 use crate::util;
+use serde::{Deserialize, Serialize};
+#[cfg(feature = "http-client")]
+use std::error::Error;
+#[cfg(feature = "http-client")]
+use url::Url;
 
 /// A data structure representing a team
 #[derive(Debug, Serialize, Deserialize)]
@@ -25,6 +29,7 @@ pub struct Team {
     pub group: Option<String>,
 }
 
+#[cfg(feature = "http-client")]
 impl Team {
     /// Get available teams
     ///
@@ -42,7 +47,7 @@ impl Team {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "http-client"))]
 mod tests {
     use super::*;
     use std::error::Error;
