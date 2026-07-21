@@ -136,15 +136,15 @@ impl Match {
     ///
     /// Fetches the next match for the specified team.
     ///
-    /// * `league` - The league identifier; see [League#id](crate::models::league::League)
+    /// * `league_id` - The numeric league ID; see [League#id](crate::models::league::League)
     /// * `team_id` - The identifier of the team; see [Team#id](crate::models::team::Team)
     pub async fn next_match_by_league_team(
-        league: i32,
+        league_id: i32,
         team_id: i32,
     ) -> Result<Self, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getnextmatchbyleagueteam/{}/{}",
-            API_BASE_URL, league, team_id
+            API_BASE_URL, league_id, team_id
         ))?;
 
         util::get::<Self>(api_url).await
@@ -154,15 +154,15 @@ impl Match {
     ///
     /// Fetches the most recently played match for the specified team.
     ///
-    /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
+    /// * `league_id` - The numeric league ID; see [League#id](crate::models::league::League)
     /// * `team_id` - The identifier of the team; see [Team#id](crate::models::team::Team)
     pub async fn last_match_by_league_team(
-        league: i32,
+        league_id: i32,
         team_id: i32,
     ) -> Result<Self, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getlastmatchbyleagueteam/{}/{}",
-            API_BASE_URL, league, team_id
+            API_BASE_URL, league_id, team_id
         ))?;
 
         util::get::<Self>(api_url).await
@@ -337,10 +337,10 @@ mod tests {
     // TODO: fix to get current league
     // #[actix_web::test]
     // async fn test_next_match_by_league_team() {
-    //     let league = BUNDESLIGA_ID;
+    //     let league_id = BUNDESLIGA_ID;
     //     let team_id = LEIPZIG_TEAM_ID;
     //     let r#match: Result<Match, OpenLigaError> =
-    //         Match::next_match_by_league_team(league, team_id).await;
+    //         Match::next_match_by_league_team(league_id, team_id).await;
     //     dbg!(&r#match);
 
     //     assert!(r#match.is_ok());
@@ -349,10 +349,10 @@ mod tests {
     #[cfg(feature = "http-client")]
     #[actix_web::test]
     async fn test_last_match_by_league_team() {
-        let league = BUNDESLIGA_ID;
+        let league_id = BUNDESLIGA_ID;
         let team_id = LEIPZIG_TEAM_ID;
         let result: Result<Match, OpenLigaError> =
-            Match::last_match_by_league_team(league, team_id).await;
+            Match::last_match_by_league_team(league_id, team_id).await;
         dbg!(&result);
 
         assert!(result.is_ok());
