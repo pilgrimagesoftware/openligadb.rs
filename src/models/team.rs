@@ -2,10 +2,10 @@
 #[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
 #[cfg(feature = "http-client")]
+use crate::error::OpenLigaError;
+#[cfg(feature = "http-client")]
 use crate::util;
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "http-client")]
-use std::error::Error;
 #[cfg(feature = "http-client")]
 use url::Url;
 
@@ -37,7 +37,7 @@ impl Team {
     ///
     /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
     /// * `season` - The season, usually the starting year
-    pub async fn available(league: &str, season: i32) -> Result<Vec<Self>, Box<dyn Error>> {
+    pub async fn available(league: &str, season: i32) -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getavailableteams/{}/{}",
             API_BASE_URL, league, season
@@ -50,7 +50,6 @@ impl Team {
 #[cfg(all(test, feature = "http-client"))]
 mod tests {
     use super::*;
-    use std::error::Error;
 
     const BUNDESLIGA: &str = "bl1";
 
@@ -58,7 +57,7 @@ mod tests {
     async fn test_available_teams() {
         let league = BUNDESLIGA;
         let season = 2024;
-        let result: Result<Vec<Team>, Box<dyn Error>> = Team::available(league, season).await;
+        let result: Result<Vec<Team>, OpenLigaError> = Team::available(league, season).await;
         dbg!(&result);
 
         assert!(result.is_ok());

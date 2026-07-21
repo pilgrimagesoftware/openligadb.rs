@@ -2,10 +2,10 @@
 #[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
 #[cfg(feature = "http-client")]
+use crate::error::OpenLigaError;
+#[cfg(feature = "http-client")]
 use crate::util;
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "http-client")]
-use std::error::Error;
 #[cfg(feature = "http-client")]
 use url::Url;
 
@@ -25,7 +25,7 @@ impl Sport {
     /// Gets a list of sports
     ///
     /// Fetches a list of all the sports in the API
-    pub async fn list() -> Result<Vec<Self>, Box<dyn Error>> {
+    pub async fn list() -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!("{}/getavailablesports", API_BASE_URL))?;
 
         util::list::<Self>(api_url).await
@@ -35,11 +35,10 @@ impl Sport {
 #[cfg(all(test, feature = "http-client"))]
 mod tests {
     use super::*;
-    use std::error::Error;
 
     #[actix_web::test]
     async fn test_list_sports() {
-        let sports: Result<Vec<Sport>, Box<dyn Error>> = Sport::list().await;
+        let sports: Result<Vec<Sport>, OpenLigaError> = Sport::list().await;
         dbg!(&sports);
 
         assert!(sports.is_ok());

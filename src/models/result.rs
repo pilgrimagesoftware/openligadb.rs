@@ -2,10 +2,10 @@
 #[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
 #[cfg(feature = "http-client")]
+use crate::error::OpenLigaError;
+#[cfg(feature = "http-client")]
 use crate::util;
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "http-client")]
-use std::error::Error;
 #[cfg(feature = "http-client")]
 use url::Url;
 
@@ -72,7 +72,7 @@ impl ResultInfo {
     /// Fetches a list of results for the specified league.
     ///
     /// * `league_id` - The identifier of the league; see [League#id](crate::models::league::League)
-    pub async fn list(league_id: i32) -> Result<Vec<Self>, Box<dyn Error>> {
+    pub async fn list(league_id: i32) -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!("{}/getresultinfos/{}", API_BASE_URL, league_id))?;
 
         util::list::<Self>(api_url).await
@@ -82,14 +82,13 @@ impl ResultInfo {
 #[cfg(all(test, feature = "http-client"))]
 mod tests {
     use super::*;
-    use std::error::Error;
 
     const BUNDESLIGA_ID: i32 = 3;
 
     #[actix_web::test]
     async fn test_list() {
         let league = BUNDESLIGA_ID;
-        let results: Result<Vec<ResultInfo>, Box<dyn Error>> = ResultInfo::list(league).await;
+        let results: Result<Vec<ResultInfo>, OpenLigaError> = ResultInfo::list(league).await;
         dbg!(&results);
 
         assert!(results.is_ok());

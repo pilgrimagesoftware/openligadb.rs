@@ -2,10 +2,10 @@
 #[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
 #[cfg(feature = "http-client")]
+use crate::error::OpenLigaError;
+#[cfg(feature = "http-client")]
 use crate::util;
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "http-client")]
-use std::error::Error;
 #[cfg(feature = "http-client")]
 use url::Url;
 
@@ -58,7 +58,7 @@ impl TableTeam {
     ///
     /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
     /// * `season` - The season, usually the starting year
-    pub async fn get_bl_table(league: &str, season: i32) -> Result<Vec<Self>, Box<dyn Error>> {
+    pub async fn get_bl_table(league: &str, season: i32) -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getbltable/{}/{}",
             API_BASE_URL, league, season
@@ -73,7 +73,7 @@ impl TableTeam {
     ///
     /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
     /// * `season` - The season, usually the starting year
-    pub async fn get_group_table(league: &str, season: i32) -> Result<Vec<Self>, Box<dyn Error>> {
+    pub async fn get_group_table(league: &str, season: i32) -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getgrouptable/{}/{}",
             API_BASE_URL, league, season
@@ -86,14 +86,13 @@ impl TableTeam {
 #[cfg(all(test, feature = "http-client"))]
 mod tests {
     use super::*;
-    use std::error::Error;
 
     const BUNDESLIGA: &str = "bl1";
 
     #[actix_web::test]
     async fn test_bl_table() {
         let season = 2024;
-        let table: Result<Vec<TableTeam>, Box<dyn Error>> =
+        let table: Result<Vec<TableTeam>, OpenLigaError> =
             TableTeam::get_bl_table(BUNDESLIGA, season).await;
         dbg!(&table);
 
@@ -104,7 +103,7 @@ mod tests {
     // #[actix_web::test]
     // async fn test_group_table() {
     //     let season = 2024;
-    //     let table: Result<Vec<TableTeam>, Box<dyn Error>> = TableTeam::get_group_table(BUNDESLIGA, season).await;
+    //     let table: Result<Vec<TableTeam>, OpenLigaError> = TableTeam::get_group_table(BUNDESLIGA, season).await;
     //     dbg!(&table);
 
     //     assert!(table.is_ok());
