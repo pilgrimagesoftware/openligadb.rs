@@ -1,7 +1,4 @@
-//! constants.rs
-//! @paulyhedral
-//!
-//! Constants
+//! Constants for the OpenLigaDB API client.
 
 /// The default URL for the OpenLigaDB API.
 #[cfg(feature = "http-client")]
