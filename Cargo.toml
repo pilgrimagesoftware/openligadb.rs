@@ -1,8 +1,9 @@
 [package]
 name = "openligadb"
 description = "Rust library for OpenLigaDB API"
-version = "0.0.9"
+version = "0.0.13"
 edition = "2021"
+rust-version = "1.82"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/pilgrimagesoftware/openligadb.rs"
@@ -16,7 +17,6 @@ exclude = [
     "data/*",
     ".github/*",
     ".gitignore",
-    ".rust-version",
     ".editorconfig",
     ".cargo_vcs_info.json",
 ]

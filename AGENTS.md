@@ -16,13 +16,18 @@ The crate is published to [crates.io](https://crates.io/crates/openligadb) and d
 
 - **GitHub**: https://github.com/pilgrimagesoftware/openligadb.rs
 - **Crate name**: `openligadb`
-- **Minimum Rust version**: 1.82.0
+- **Minimum Rust version**: pinned in `Cargo.toml`'s `rust-version` (currently 1.82); toolchain
+  version resolved via `rust-toolchain.toml` (`stable` + `rustfmt`/`clippy`)
 
 ## Branches and Workflow
 
 - `develop` is the source of truth for active development (Git Flow).
 - Feature branches are cut from `develop` and merged back via pull request.
-- `master` / `main` tracks released, published versions.
+- `master` tracks released, published versions; nothing is committed here directly.
+- Releases are automated via `git-cliff` and Conventional Commits — see
+  [RELEASING.md](RELEASING.md). **Squash-merging a PR must preserve the original commit's
+  Conventional Commits type/breaking marker** (`gh pr merge <n> --squash --subject "feat!:
+  ..."`), or the release automation silently under-bumps the version.
 
 ## Coding Conventions
 
@@ -32,7 +37,8 @@ The crate is published to [crates.io](https://crates.io/crates/openligadb) and d
   warnings that are not explicitly suppressed in `lib.rs`.
 - YAML files use the `.yaml` extension (not `.yml`).
 - Commit messages follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
-  format, e.g. `feat(league): add get-by-season endpoint`.
+  format, e.g. `feat(league): add get-by-season endpoint` — `git-cliff` reads these to generate
+  the changelog and compute the release version; see [RELEASING.md](RELEASING.md).
 
 ## Adding a New Model
 
@@ -78,10 +84,10 @@ deserializes a fixture or a response fetched by its own transport still needs th
 cargo build
 
 # Run tests
-cargo test
+cargo test --all-features --workspace
 
 # Lint
-cargo clippy -- -D warnings
+cargo clippy --all-targets --all-features -- -D warnings
 
 # Format
 cargo fmt --check
@@ -90,4 +96,12 @@ cargo fmt --check
 cargo check --no-default-features
 cargo test --no-default-features
 cargo clippy --no-default-features --all-targets -- -D warnings
+cargo check --no-default-features --target wasm32-wasip2
+
+# Docs
+cargo test --doc
+RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full PR workflow and [SECURITY.md](SECURITY.md) to
+report a vulnerability.
