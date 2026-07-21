@@ -1,0 +1,8 @@
+- [x] 8.1 Add `chrono = { version = "0.4", features = ["serde"] }` to `[dependencies]` in `openligadb.rs/Cargo.toml`
+- [x] 8.2 Add `use chrono::{DateTime, NaiveDateTime, Utc};` import to `openligadb.rs/src/models/match.rs`
+- [x] 8.3 Change `Match::when: Option<String>` to `Option<NaiveDateTime>`
+- [x] 8.4 Change `Match::when_utc: Option<String>` to `Option<DateTime<Utc>>`
+- [x] 8.5 Change `Match::last_update: Option<String>` to `Option<NaiveDateTime>`
+- [x] 8.6 Verify the existing `test_deserialize_match` test in `match.rs` still passes against the JSON fixture at `data/match-72395.json`
+- [x] 8.7 ~~Update `app/src-tauri/src/lib.rs`~~ — N/A: the app repo has migrated from Tauri to a gpui-based UI; no `src-tauri` directory exists. Searched `Apps/rust/crates` for `.when`/`.when_utc`/`.last_update` usage; only an unrelated gpui builder method (`.when(...)`) matched.
+- [x] 8.8 Run `cargo test` in `openligadb.rs/` to confirm no regressions (app repo has no corresponding usage to test per 8.7)

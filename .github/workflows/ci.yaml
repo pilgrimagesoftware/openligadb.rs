@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [develop]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: pilgrimagesoftware/github-actions/.github/workflows/rust-ci.yaml@master
+    with:
+      test-args: "--all-features --workspace"
+      no-default-features-test: true
+      doc-test: true
+      doc-build: true
+
+  no-default-features-wasm32:
+    name: No default features (wasm32-wasip2)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip2
+
+      - name: Check (wasm32-wasip2, no default features)
+        run: |
+          cargo check --no-default-features --target wasm32-wasip2

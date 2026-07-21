@@ -1,0 +1,5 @@
+- [x] 1.1 In `openligadb.rs/Cargo.toml`, move `actix-web = "4.0"` from `[dependencies]` to `[dev-dependencies]`
+- [x] 1.2 Remove `openssl-sys = { version = "0.9", features = ["vendored"] }` from `[dependencies]`
+- [x] 1.3 Remove the entire `[build]` table (`profiler = true`) from `openligadb.rs/Cargo.toml`
+- [x] 1.4 Run `cargo build` in `openligadb.rs/` to confirm the library still compiles
+- [x] 1.5 Run `cargo test` in `openligadb.rs/` to confirm all tests still pass with `actix-web` as a dev dependency only

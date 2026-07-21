@@ -1,11 +1,37 @@
 [package]
 name = "openligadb"
-version = "0.0.1"
+description = "Rust library for OpenLigaDB API"
+version = "1.0.0"
 edition = "2021"
+rust-version = "1.82"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/pilgrimagesoftware/openligadb.rs"
+documentation = "https://docs.rs/openligadb"
+homepage = "https://github.com/pilgrimagesoftware/openligadb.rs"
+keywords = ["openliga", "openligadb", "football", "soccer"]
+categories = ["data-structures"]
+authors = ["Paul Schifferer <paul@schifferers.net>"]
+exclude = [
+    "*.orig",
+    "data/*",
+    ".github/*",
+    ".gitignore",
+    ".editorconfig",
+    ".cargo_vcs_info.json",
+]
+
+[features]
+default = ["http-client"]
+http-client = ["dep:reqwest", "dep:url"]
 
 [dependencies]
-reqwest = { version = "0.12", features = ["json"] }
+chrono = { version = "0.4", default-features = false, features = ["serde", "std"] }
+reqwest = { version = "0.13", features = ["json"], optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-url = "2.0"
-async-trait = "0.1"
+thiserror = "2.0"
+url = { version = "2.0", optional = true }
+
+[dev-dependencies]
+actix-web = "4.0"

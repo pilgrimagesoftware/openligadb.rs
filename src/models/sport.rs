@@ -1,23 +1,46 @@
-use crate::{client::List, constants::API_BASE_URL};
-use serde::{ Deserialize, Serialize};
-use std::error::Error;
+#![doc = r"The Sport object and methods"]
+#[cfg(feature = "http-client")]
+use crate::constants::API_BASE_URL;
+#[cfg(feature = "http-client")]
+use crate::error::OpenLigaError;
+#[cfg(feature = "http-client")]
+use crate::util;
+use serde::{Deserialize, Serialize};
+#[cfg(feature = "http-client")]
 use url::Url;
-use async_trait::async_trait;
 
+/// A data structure representing a sport
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Sport {
+    /// The identifier of this sport data
     #[serde(rename(deserialize = "sportId"))]
-    pub id: u64,
+    pub id: i32,
+    /// The name of the sport
     #[serde(rename(deserialize = "sportName"))]
-    pub name: String,
+    pub name: Option<String>,
 }
 
-#[async_trait]
-impl List for Sport {
-    async fn list() -> Result<Vec<Sport>, Box<dyn Error>> {
-
+#[cfg(feature = "http-client")]
+impl Sport {
+    /// Gets a list of sports
+    ///
+    /// Fetches a list of all the sports in the API
+    pub async fn list() -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!("{}/getavailablesports", API_BASE_URL))?;
 
-        crate::client::list::<Sport>(api_url).await
+        util::list::<Self>(api_url).await
+    }
+}
+
+#[cfg(all(test, feature = "http-client"))]
+mod tests {
+    use super::*;
+
+    #[actix_web::test]
+    async fn test_list_sports() {
+        let sports: Result<Vec<Sport>, OpenLigaError> = Sport::list().await;
+        dbg!(&sports);
+
+        assert!(sports.is_ok());
     }
 }
