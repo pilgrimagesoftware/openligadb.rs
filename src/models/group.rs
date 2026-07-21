@@ -3,6 +3,8 @@
 use crate::constants::API_BASE_URL;
 #[cfg(feature = "http-client")]
 use crate::error::OpenLigaError;
+#[cfg(feature = "http-client")]
+use crate::util;
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "http-client")]
 use url::Url;
@@ -31,9 +33,7 @@ impl Group {
     pub async fn current(league: &str) -> Result<Self, OpenLigaError> {
         let api_url = Url::parse(&format!("{}/getcurrentgroup/{}", API_BASE_URL, league))?;
 
-        let response = reqwest::get(api_url.as_str()).await?.json::<Self>().await?;
-
-        Ok(response)
+        util::get::<Self>(api_url).await
     }
 
     /// A list of groups for a league and season
@@ -48,12 +48,7 @@ impl Group {
             API_BASE_URL, league, season
         ))?;
 
-        let response = reqwest::get(api_url.as_str())
-            .await?
-            .json::<Vec<Self>>()
-            .await?;
-
-        Ok(response)
+        util::list::<Self>(api_url).await
     }
 }
 
