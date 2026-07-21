@@ -52,7 +52,7 @@ The crate is published to [crates.io](https://crates.io/crates/openligadb) and d
 
 ## Feature gating
 
-The crate has an `http-client` feature (default-on) that gates `reqwest`, `async-trait`, `url`,
+The crate has an `http-client` feature (default-on) that gates `reqwest`, `url`,
 and every network method, so a consumer that only needs the model structs and their `serde`
 impls (e.g. a WASM component deserializing bytes fetched through its own host `fetch`
 capability) can depend on this crate with `default-features = false` and pull in no networking
