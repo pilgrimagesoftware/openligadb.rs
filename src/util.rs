@@ -6,11 +6,11 @@ use serde::de::DeserializeOwned;
 use std::error::Error;
 use url::Url;
 
-pub async fn list<M>(url: Url) -> Result<Vec<M>, Box<dyn Error>>
+pub(crate) async fn list<M>(url: Url) -> Result<Vec<M>, Box<dyn Error>>
 where
-    M: DeserializeOwned + 'static,
+    M: DeserializeOwned,
 {
-    let response = reqwest::get(url.as_str())
+    let response = reqwest::get(url)
         .await
         .map_err(|e| e.to_string())?
         .json::<Vec<M>>()
@@ -20,11 +20,11 @@ where
     Ok(response)
 }
 
-pub async fn get<M>(url: Url) -> Result<M, Box<dyn Error>>
+pub(crate) async fn get<M>(url: Url) -> Result<M, Box<dyn Error>>
 where
-    M: DeserializeOwned + 'static,
+    M: DeserializeOwned,
 {
-    let response = reqwest::get(url.as_str())
+    let response = reqwest::get(url)
         .await
         .map_err(|e| e.to_string())?
         .json::<M>()
