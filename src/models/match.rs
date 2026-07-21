@@ -8,6 +8,7 @@ use crate::models::{
 };
 #[cfg(feature = "http-client")]
 use crate::util;
+use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "http-client")]
 use url::Url;
@@ -20,7 +21,7 @@ pub struct Match {
     pub id: i32,
     /// The time when the match took place, or will take place
     #[serde(rename(deserialize = "matchDateTime"))]
-    pub when: Option<String>,
+    pub when: Option<NaiveDateTime>,
     /// The time zone of the match
     #[serde(rename(deserialize = "timeZoneID"))]
     pub time_zone: Option<String>,
@@ -38,7 +39,7 @@ pub struct Match {
     pub league_shortcut: Option<String>,
     /// The date and time in UTC for the match
     #[serde(rename(deserialize = "matchDateTimeUTC"))]
-    pub when_utc: Option<String>,
+    pub when_utc: Option<DateTime<Utc>>,
     /// The group to which this match belongs
     #[serde(rename(deserialize = "group"))]
     pub group: Group,
@@ -50,7 +51,7 @@ pub struct Match {
     pub team2: Team,
     /// The timestamp when this data was last updated
     #[serde(rename(deserialize = "lastUpdateDateTime"))]
-    pub last_update: Option<String>,
+    pub last_update: Option<NaiveDateTime>,
     /// Indicates if the match is finished or in-progress
     #[serde(rename(deserialize = "matchIsFinished"))]
     pub is_finished: bool,

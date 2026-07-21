@@ -5,9 +5,9 @@ Match date/time fields (`when`, `when_utc`, `last_update`) and the `time_zone` f
 ## What Changes
 
 - Add `chrono = { version = "0.4", features = ["serde"] }` to `[dependencies]` in `openligadb.rs/Cargo.toml`
-- Change `Match::when` from `Option<String>` to `Option<chrono::DateTime<chrono::FixedOffset>>`
+- Change `Match::when` from `Option<String>` to `Option<chrono::NaiveDateTime>`
 - Change `Match::when_utc` from `Option<String>` to `Option<chrono::DateTime<chrono::Utc>>`
-- Change `Match::last_update` from `Option<String>` to `Option<chrono::DateTime<chrono::FixedOffset>>`
+- Change `Match::last_update` from `Option<String>` to `Option<chrono::NaiveDateTime>`
 - Keep `Match::time_zone` as `Option<String>` for now (IANA timezone name string)
 
 ## Capabilities
