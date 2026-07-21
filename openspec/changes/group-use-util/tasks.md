@@ -1,5 +1,5 @@
-- [ ] 6.1 Add `use crate::util;` to the imports in `openligadb.rs/src/models/group.rs`
-- [ ] 6.2 Replace the inline `reqwest::get` / `.json::<Self>()` block in `Group::current` with `util::get(api_url).await`
-- [ ] 6.3 Replace the inline `reqwest::get` / `.json::<Vec<Self>>()` block in `Group::available` with `util::list(api_url).await`
-- [ ] 6.4 Remove any now-unused imports from `group.rs` (e.g. direct `reqwest` usage)
-- [ ] 6.5 Run `cargo test -p openligadb` to confirm both `test_available` and `test_current` still pass
+- [x] 6.1 Add `use crate::util;` to the imports in `openligadb.rs/src/models/group.rs`
+- [x] 6.2 Replace the inline `reqwest::get` / `.json::<Self>()` block in `Group::current` with `util::get(api_url).await`
+- [x] 6.3 Replace the inline `reqwest::get` / `.json::<Vec<Self>>()` block in `Group::available` with `util::list(api_url).await`
+- [x] 6.4 Remove any now-unused imports from `group.rs` (e.g. direct `reqwest` usage)
+- [x] 6.5 Run `cargo test -p openligadb` to confirm both `test_available` and `test_current` still pass
