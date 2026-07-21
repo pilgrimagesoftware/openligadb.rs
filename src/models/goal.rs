@@ -40,7 +40,6 @@ pub struct Goal {
     #[serde(rename(deserialize = "isOvertime"))]
     pub is_overtime: Option<bool>,
     /// A comment associated with the goal
-    #[serde(rename(deserialize = "comment"))]
     pub comment: Option<String>,
 }
 

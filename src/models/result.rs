@@ -14,10 +14,8 @@ use url::Url;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GlobalResultInfo {
     /// The identifier of the global result data
-    #[serde(rename(deserialize = "id"))]
     pub id: i32,
     /// The name of the result
-    #[serde(rename(deserialize = "name"))]
     pub name: Option<String>,
 }
 
