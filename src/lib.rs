@@ -12,6 +12,11 @@
 #![warn(rust_2018_idioms)]
 
 mod constants;
+#[cfg(feature = "http-client")]
+mod error;
 pub mod models;
 #[cfg(feature = "http-client")]
 mod util;
+
+#[cfg(feature = "http-client")]
+pub use error::OpenLigaError;

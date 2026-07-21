@@ -4,8 +4,8 @@ Every public method in the `openligadb.rs` library returns `Result<..., Box<dyn 
 
 ## What Changes
 
-- Add `thiserror = "1"` to `[dependencies]` in `openligadb.rs/Cargo.toml`
-- Define a `pub enum OpenLigaError` in a new `error.rs` module with variants: `Http(reqwest::Error)`, `Json(reqwest::Error)`, `Url(url::ParseError)`
+- Add `thiserror = "2.0"` to `[dependencies]` in `openligadb.rs/Cargo.toml`
+- Define a `pub enum OpenLigaError` in a new `error.rs` module with variants: `Reqwest(reqwest::Error)`, `Url(url::ParseError)` (see `design.md` for why `Http`/`Json` were merged into one `Reqwest` variant)
 - Update `util::list` and `util::get` to return `Result<_, OpenLigaError>` and use `?` with `#[from]` conversions
 - Update all model method signatures to return `Result<_, OpenLigaError>`
 - Re-export `OpenLigaError` from `lib.rs`
@@ -22,4 +22,4 @@ Every public method in the `openligadb.rs` library returns `Result<..., Box<dyn 
 - `openligadb.rs/src/lib.rs`: add `pub mod error;` and re-export `OpenLigaError`
 - `openligadb.rs/src/util.rs`: update return types
 - All model files: update return type annotations and remove `map_err(|e| e.to_string())` calls
-- `app/src-tauri/src/lib.rs`: update `.map_err(|e| e.to_string())` calls at Tauri command boundaries (no change needed since those already call `.map_err`)
+- No downstream app currently depends on this crate (`app/src-tauri` no longer exists; the app moved to GPUI and hasn't wired up `openligadb` yet), so there is no consumer to verify against

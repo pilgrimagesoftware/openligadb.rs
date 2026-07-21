@@ -2,10 +2,10 @@
 #[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
 #[cfg(feature = "http-client")]
+use crate::error::OpenLigaError;
+#[cfg(feature = "http-client")]
 use crate::util;
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "http-client")]
-use std::error::Error;
 #[cfg(feature = "http-client")]
 use url::Url;
 
@@ -65,7 +65,7 @@ impl GoalGetter {
     ///
     /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
     /// * `season` - The season value, usually the year the season begins
-    pub async fn list(league: &str, season: i32) -> Result<Vec<Self>, Box<dyn Error>> {
+    pub async fn list(league: &str, season: i32) -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getgoalgetters/{}/{}",
             API_BASE_URL, league, season
@@ -78,7 +78,6 @@ impl GoalGetter {
 #[cfg(all(test, feature = "http-client"))]
 mod tests {
     use super::*;
-    use std::error::Error;
 
     const BUNDESLIGA: &str = "bl1";
 
@@ -86,7 +85,7 @@ mod tests {
     async fn test_list() {
         let league = BUNDESLIGA;
         let season = 2024;
-        let teams: Result<Vec<GoalGetter>, Box<dyn Error>> = GoalGetter::list(league, season).await;
+        let teams: Result<Vec<GoalGetter>, OpenLigaError> = GoalGetter::list(league, season).await;
         dbg!(&teams);
 
         assert!(teams.is_ok());

@@ -1,14 +1,14 @@
 #![doc = r"The Match object and methods"]
 #[cfg(feature = "http-client")]
 use crate::constants::API_BASE_URL;
+#[cfg(feature = "http-client")]
+use crate::error::OpenLigaError;
 use crate::models::{
     goal::Goal, group::Group, location::Location, result::MatchResult, team::Team,
 };
 #[cfg(feature = "http-client")]
 use crate::util;
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "http-client")]
-use std::error::Error;
 #[cfg(feature = "http-client")]
 use url::Url;
 
@@ -75,7 +75,7 @@ impl Match {
     /// Fetches the specified match; see [Match#id](Match)
     ///
     /// * `id` - The identifier of the match
-    pub async fn get(id: i32) -> Result<Self, Box<dyn Error>> {
+    pub async fn get(id: i32) -> Result<Self, OpenLigaError> {
         let api_url = Url::parse(&format!("{}/getmatchdata/{}", API_BASE_URL, id))?;
 
         util::get::<Self>(api_url).await
@@ -87,7 +87,7 @@ impl Match {
     ///
     /// * `team1_id` - The identifier of the first team
     /// * `team2_id` - The identifier of the second team
-    pub async fn by_teams(team1_id: i32, team2_id: i32) -> Result<Vec<Self>, Box<dyn Error>> {
+    pub async fn by_teams(team1_id: i32, team2_id: i32) -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getmatchdata/{}/{}",
             API_BASE_URL, team1_id, team2_id
@@ -102,7 +102,7 @@ impl Match {
     ///
     /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
     /// * `season` - The season, usually the starting year
-    pub async fn by_league(league: &str, season: i32) -> Result<Vec<Self>, Box<dyn Error>> {
+    pub async fn by_league(league: &str, season: i32) -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getmatchdata/{}/{}",
             API_BASE_URL, league, season
@@ -122,7 +122,7 @@ impl Match {
         league: &str,
         season: i32,
         group_order_id: i32,
-    ) -> Result<Vec<Self>, Box<dyn Error>> {
+    ) -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getmatchdata/{}/{}/{}",
             API_BASE_URL, league, season, group_order_id
@@ -140,7 +140,7 @@ impl Match {
     pub async fn next_match_by_league_team(
         league: i32,
         team_id: i32,
-    ) -> Result<Self, Box<dyn Error>> {
+    ) -> Result<Self, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getnextmatchbyleagueteam/{}/{}",
             API_BASE_URL, league, team_id
@@ -158,7 +158,7 @@ impl Match {
     pub async fn last_match_by_league_team(
         league: i32,
         team_id: i32,
-    ) -> Result<Self, Box<dyn Error>> {
+    ) -> Result<Self, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getlastmatchbyleagueteam/{}/{}",
             API_BASE_URL, league, team_id
@@ -172,7 +172,7 @@ impl Match {
     /// Fetches the next match to be played in the specified league.
     ///
     /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
-    pub async fn next_match_by_league(league: &str) -> Result<Self, Box<dyn Error>> {
+    pub async fn next_match_by_league(league: &str) -> Result<Self, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getnextmatchbyleagueshortcut/{}",
             API_BASE_URL, league
@@ -186,7 +186,7 @@ impl Match {
     /// Fetches the most recently played match for the specified league.
     ///
     /// * `league` - The league shortcut; see [League#shortcut](crate::models::league::League)
-    pub async fn last_match_by_league(league: &str) -> Result<Self, Box<dyn Error>> {
+    pub async fn last_match_by_league(league: &str) -> Result<Self, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getlastmatchbyleagueshortcut/{}",
             API_BASE_URL, league
@@ -206,7 +206,7 @@ impl Match {
         league: &str,
         season: i32,
         team_filter: &str,
-    ) -> Result<Vec<Self>, Box<dyn Error>> {
+    ) -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getmatchdata/{}/{}/{}",
             API_BASE_URL, league, season, team_filter
@@ -227,7 +227,7 @@ impl Match {
         team_filter: &str,
         week_count_past: i32,
         week_count_future: i32,
-    ) -> Result<Vec<Self>, Box<dyn Error>> {
+    ) -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getmatchesbyteam/{}/{}/{}",
             API_BASE_URL, team_filter, week_count_past, week_count_future
@@ -248,7 +248,7 @@ impl Match {
         team_id: i32,
         week_count_past: i32,
         week_count_future: i32,
-    ) -> Result<Vec<Self>, Box<dyn Error>> {
+    ) -> Result<Vec<Self>, OpenLigaError> {
         let api_url = Url::parse(&format!(
             "{}/getmatchesbyteamid/{}/{}/{}",
             API_BASE_URL, team_id, week_count_past, week_count_future
@@ -262,9 +262,6 @@ impl Match {
 mod tests {
     use super::*;
     use std::fs::File;
-
-    #[cfg(feature = "http-client")]
-    use std::error::Error;
 
     #[cfg(feature = "http-client")]
     const LEIPZIG_TEAM_ID: i32 = 1635;
@@ -290,7 +287,7 @@ mod tests {
     #[actix_web::test]
     async fn test_get() {
         let match_id = LEIPZIG_STPAULI_MATCH_ID; // Leipzig - St. Pauli
-        let r#match: Result<Match, Box<dyn Error>> = Match::get(match_id).await;
+        let r#match: Result<Match, OpenLigaError> = Match::get(match_id).await;
         dbg!(&r#match);
 
         assert!(&r#match.is_ok());
@@ -306,7 +303,7 @@ mod tests {
     async fn test_by_teams() {
         let team1 = LEIPZIG_TEAM_ID; // Leipzig
         let team2 = KIEL_TEAM_ID; // Holstein Kiel
-        let result: Result<Vec<Match>, Box<dyn Error>> = Match::by_teams(team1, team2).await;
+        let result: Result<Vec<Match>, OpenLigaError> = Match::by_teams(team1, team2).await;
         dbg!(&result);
 
         assert!(result.is_ok());
@@ -317,7 +314,7 @@ mod tests {
     async fn test_by_league() {
         let league = BUNDESLIGA;
         let season = 2024;
-        let matches: Result<Vec<Match>, Box<dyn Error>> = Match::by_league(league, season).await;
+        let matches: Result<Vec<Match>, OpenLigaError> = Match::by_league(league, season).await;
         dbg!(&matches);
 
         assert!(matches.is_ok());
@@ -329,7 +326,7 @@ mod tests {
         let league = BUNDESLIGA;
         let season = 2024;
         let group_id = 1;
-        let matches: Result<Vec<Match>, Box<dyn Error>> =
+        let matches: Result<Vec<Match>, OpenLigaError> =
             Match::by_league_group(league, season, group_id).await;
         dbg!(&matches);
 
@@ -341,7 +338,7 @@ mod tests {
     // async fn test_next_match_by_league_team() {
     //     let league = BUNDESLIGA_ID;
     //     let team_id = LEIPZIG_TEAM_ID;
-    //     let r#match: Result<Match, Box<dyn Error>> =
+    //     let r#match: Result<Match, OpenLigaError> =
     //         Match::next_match_by_league_team(league, team_id).await;
     //     dbg!(&r#match);
 
@@ -353,7 +350,7 @@ mod tests {
     async fn test_last_match_by_league_team() {
         let league = BUNDESLIGA_ID;
         let team_id = LEIPZIG_TEAM_ID;
-        let result: Result<Match, Box<dyn Error>> =
+        let result: Result<Match, OpenLigaError> =
             Match::last_match_by_league_team(league, team_id).await;
         dbg!(&result);
 
@@ -364,7 +361,7 @@ mod tests {
     #[actix_web::test]
     async fn test_next_match_by_league() {
         let league = BUNDESLIGA;
-        let result: Result<Match, Box<dyn Error>> = Match::next_match_by_league(league).await;
+        let result: Result<Match, OpenLigaError> = Match::next_match_by_league(league).await;
         dbg!(&result);
 
         assert!(result.is_ok());
@@ -374,7 +371,7 @@ mod tests {
     #[actix_web::test]
     async fn test_last_match_by_league() {
         let league = BUNDESLIGA;
-        let r#match: Result<Match, Box<dyn Error>> = Match::last_match_by_league(league).await;
+        let r#match: Result<Match, OpenLigaError> = Match::last_match_by_league(league).await;
         dbg!(&r#match);
 
         assert!(r#match.is_ok());
@@ -386,7 +383,7 @@ mod tests {
         let league = BUNDESLIGA;
         let season = 2024;
         let team = "Leipzig";
-        let matches: Result<Vec<Match>, Box<dyn Error>> =
+        let matches: Result<Vec<Match>, OpenLigaError> =
             Match::by_league_team(league, season, team).await;
         dbg!(&matches);
 
@@ -399,7 +396,7 @@ mod tests {
         let team_filter = "Leipzig";
         let week_count_past = 1;
         let week_count_future = 1;
-        let matches: Result<Vec<Match>, Box<dyn Error>> =
+        let matches: Result<Vec<Match>, OpenLigaError> =
             Match::by_team_range(team_filter, week_count_past, week_count_future).await;
         dbg!(&matches);
 
@@ -412,7 +409,7 @@ mod tests {
         let team_id = LEIPZIG_TEAM_ID;
         let week_count_past = 1;
         let week_count_future = 1;
-        let matches: Result<Vec<Match>, Box<dyn Error>> =
+        let matches: Result<Vec<Match>, OpenLigaError> =
             Match::by_team_id_range(team_id, week_count_past, week_count_future).await;
         dbg!(&matches);
 
